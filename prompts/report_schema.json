@@ -1,0 +1,33 @@
+{
+  "version": "1.0",
+  "summary": {
+    "headline": "Your homepage has a few fixable gaps",
+    "description": "These notes explain the verified checks. They are not a ranking.",
+    "top_priority": "Add a meta description"
+  },
+  "issues": [
+    {
+      "check_key": "seo.meta_description",
+      "severity": "high",
+      "problem": "Missing meta description",
+      "impact": "Search engines may generate their own snippets.",
+      "recommended_fix": "Add a unique description based on the page offer.",
+      "implementation_steps": [
+        "Open the homepage metadata settings.",
+        "Add a relevant description.",
+        "Confirm the tag in the published HTML."
+      ],
+      "suggested_copy": ""
+    }
+  ],
+  "quick_wins": [
+    {
+      "check_key": "seo.meta_description",
+      "title": "Add a meta description",
+      "action": "Write one sentence from the visible page offer."
+    }
+  ],
+  "disclaimers": [
+    "AI Readiness is a technical readiness score, not a ranking in ChatGPT, Google, or Perplexity."
+  ]
+}

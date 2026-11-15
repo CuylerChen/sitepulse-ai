@@ -1,0 +1,13 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: sitepulse
+      POSTGRES_PASSWORD: sitepulse
+      POSTGRES_DB: sitepulse
+    ports:
+      - "5432:5432"
+    volumes:
+      - sitepulse_pg:/var/lib/postgresql/data
+volumes:
+  sitepulse_pg:
