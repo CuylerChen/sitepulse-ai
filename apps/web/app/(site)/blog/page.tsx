@@ -17,7 +17,7 @@ export default function BlogIndexPage() {
       </p>
       <ul className="mt-8 space-y-4">
         {articles.map((article) => (
-          <li key={article.slug} className="rounded-xl border border-slate-200 bg-white p-5">
+          <li key={article.slug} className="rounded-xl border border-line bg-card p-5">
             <p className="text-xs text-muted">{formatDay(article.published)} · {readingMinutes(article)} min read</p>
             <h2 className="mt-1 text-xl font-semibold">
               <Link href={`/blog/${article.slug}`} className="hover:text-primary">{article.title}</Link>

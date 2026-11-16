@@ -44,7 +44,7 @@ export function DashboardClient() {
             <Link href="/pricing" className="text-sm font-semibold text-primary">See plans</Link>
           ) : null}
         </div>
-        <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100" aria-hidden="true">
+        <div className="mt-3 h-2 overflow-hidden bg-page" aria-hidden="true">
           <div className="h-full bg-primary" style={{ width: `${pct}%` }} />
         </div>
         <p className="sr-only">{pct}% of the monthly allowance used.</p>

@@ -1,160 +1,142 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ReportView } from "@/components/report-view";
-import { sampleReport } from "@/lib/sample-report";
 import { UrlForm } from "@/components/url-form";
 import { ButtonLink, Card } from "@/components/ui";
 import { RANKING_DISCLAIMER } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: { absolute: "SitePulse — Website audit and AI search readiness" },
+  title: { absolute: "SitePulse — Discover why your website isn't ranking" },
   description:
-    "Find SEO issues, performance problems, and AI search readiness gaps in seconds. Free homepage audit for independent sites and Shopify stores.",
+    "Get a comprehensive SEO and AI visibility audit with actionable insights. One free analysis — paste your URL.",
 };
 
-const features = [
+const modules = [
   {
-    title: "SEO",
-    body: "See whether the title, description, headings, canonical, and indexing directives on the page you submit are working together. This is an on-page check, not a rank tracker.",
+    title: "SEO Foundation Audit",
+    body: "On-page, technical & content quality analysis",
+    href: "/seo-checker",
+    icon: "shield",
   },
   {
-    title: "Performance",
-    body: "When a scan returns lab data, you get a performance score and the usual speed metrics. If it does not, the report says Not available. We never turn a missing number into a zero.",
+    title: "AI Visibility Engine",
+    body: "Optimized for ChatGPT, Gemini & AI Overviews",
+    href: "/ai-visibility-checker",
+    icon: "nodes",
   },
   {
-    title: "AI readiness",
-    body: "Check whether known AI crawlers are allowed, blocked, or unknown, and whether the page states what you sell in HTML a crawler can read. This is readiness, not a citation tracker.",
+    title: "Backlink Intelligence",
+    body: "Authority profile & link quality analysis",
+    href: "/website-audit",
+    icon: "link",
   },
   {
-    title: "Content",
-    body: "A short page with a vague heading is hard to summarize. The content checks look at headings, description length, and whether the page explains the offer in plain language.",
+    title: "Competitor Intelligence",
+    body: "Gap analysis & competitive benchmarking",
+    href: "/website-grader",
+    icon: "user",
   },
-];
-
-const steps = [
-  { title: "Enter a homepage", body: "Paste a domain or a full URL. No account, theme edit, or Shopify app is required to start." },
-  { title: "We open that page", body: "SitePulseBot fetches the submitted page, robots.txt, and the sitemap reference. It does not walk the rest of the store." },
-  { title: "Read the fix list", body: "You get a score, the checks behind it, and recommendations written for a store owner, not a search engineer." },
-];
+  {
+    title: "Ranking Predictor",
+    body: "Data-driven ranking potential estimation",
+    href: "/website-grader",
+    icon: "chart",
+  },
+  {
+    title: "Smart Action Plan",
+    body: "Prioritized, actionable improvement steps",
+    href: "/website-audit",
+    icon: "bolt",
+  },
+] as const;
 
 const faqs = [
   {
-    q: "What does the free audit include?",
-    a: "A scan of the page you submit, plus robots.txt and the sitemap reference. You see scores, checks, and recommendations. It is not a full-site crawl and it does not connect to Shopify admin.",
+    q: "What does the free analysis include?",
+    a: "One homepage scan, plus robots.txt and the sitemap reference. You get scores, checks, and a prioritized fix list. It is not a full-site crawl.",
   },
   {
     q: "Do I need to sign up?",
-    a: "No. You can run a homepage audit without an account. An account is for history, saved websites, and paid plans.",
+    a: "No. The first analysis runs without an account. An account keeps history and unlocks Pro.",
   },
   {
-    q: "Is AI Readiness a ChatGPT ranking?",
-    a: "No. AI Readiness measures whether crawlers can access and understand the site. It is not a ranking in ChatGPT, Google, or Perplexity, and it is not a promise of traffic.",
-  },
-  {
-    q: "Why would performance say Not available?",
-    a: "Some scans do not return a performance score. We leave the field blank and explain that. A blank score is not a zero and should not be treated as a failure by itself.",
-  },
-  {
-    q: "Can I share or print the report?",
-    a: "You can publish a public link from the report and revoke it later. PDF print is included with Pro. Free scans still show the full report in the browser.",
+    q: "Is the score a Google or ChatGPT ranking?",
+    a: "No. The score explains technical readiness and on-page gaps. It is not a ranking in Google, ChatGPT, Gemini, or Perplexity, and it is not a promise of traffic.",
   },
 ];
-
-const faqJson = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: faqs.map((item) => ({
-    "@type": "Question",
-    name: item.q,
-    acceptedAnswer: { "@type": "Answer", text: item.a },
-  })),
-};
 
 export default function HomePage() {
   return (
     <div>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJson).replace(/</g, "\\u003c") }} />
-      <section className="mx-auto max-w-6xl px-4 pb-12 pt-12 md:pt-20">
-        <div className="max-w-3xl">
-          <p className="text-sm font-semibold text-primary">Homepage audit for store owners</p>
-          <h1 className="mt-3 text-4xl font-semibold tracking-tight text-ink md:text-5xl">Is your website ready for search?</h1>
-          <p className="mt-4 text-lg leading-8 text-muted">
-            Find SEO issues, performance problems, and AI search readiness gaps in seconds.
+      <section className="border-b border-line bg-white px-4 pb-20 pt-16 md:pb-24 md:pt-20">
+        <div className="mx-auto flex max-w-4xl flex-col items-center text-center">
+          <p className="inline-flex items-center gap-2 bg-primary px-2 py-1 text-xs font-semibold uppercase tracking-wide text-white">
+            AI-Powered SEO & Visibility Analysis
           </p>
-        </div>
-        <div id="audit" className="mt-8 max-w-3xl rounded-xl border border-slate-200 bg-white p-5 shadow-card md:p-6">
-          <UrlForm focus="full" id="home-url" />
-          <p className="mt-4 text-sm text-muted">No signup required · Homepage only · Free website audit</p>
-        </div>
-      </section>
-
-      <section className="border-y border-slate-200 bg-white" aria-label="What a scan covers">
-        <ul className="mx-auto grid max-w-6xl gap-4 px-4 py-5 text-sm text-ink sm:grid-cols-2 lg:grid-cols-4">
-          <li>No signup required for a first scan</li>
-          <li>Homepage, robots.txt, and sitemap only</li>
-          <li>Built for independent stores and Shopify</li>
-          <li>Scores explained in plain language</li>
-        </ul>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-4 py-14">
-        <h2 className="text-2xl font-semibold">What the audit looks at</h2>
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
-          {features.map((feature) => (
-            <Card key={feature.title}>
-              <h3 className="text-lg font-semibold">{feature.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-muted">{feature.body}</p>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-4 pb-14">
-        <h2 className="text-2xl font-semibold">How it works</h2>
-        <ol className="mt-6 grid gap-4 md:grid-cols-3">
-          {steps.map((step, index) => (
-            <li key={step.title} className="rounded-xl border border-slate-200 bg-white p-5">
-              <p className="text-sm font-semibold text-primary">0{index + 1}</p>
-              <h3 className="mt-2 text-lg font-semibold">{step.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-muted">{step.body}</p>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section id="sample" className="mx-auto max-w-6xl px-4 pb-14">
-        <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 className="text-2xl font-semibold">What a report looks like</h2>
-            <p className="mt-1 text-sm text-muted">The numbers below are a static preview so you can see the layout before you scan.</p>
+          <h1 className="mt-8 max-w-4xl text-4xl font-semibold tracking-tight text-ink sm:text-6xl sm:leading-[1.08]">
+            Discover Why Your
+            <br />
+            Website <span className="text-primary">Isn&apos;t Ranking</span>
+          </h1>
+          <p className="mt-6 max-w-2xl text-base leading-7 text-muted sm:text-lg">
+            Get a comprehensive SEO & AI visibility audit with actionable insights. 1 free analysis — just paste your URL.
+          </p>
+          <div id="audit" className="mt-10 w-full">
+            <UrlForm focus="full" id="home-url" variant="hero" buttonLabel="Analyze" />
           </div>
-          <Link href="/website-audit" className="text-sm font-semibold text-primary">See what a live audit covers</Link>
+          <ul className="mt-6 flex flex-col items-center gap-3 text-sm text-muted sm:flex-row sm:gap-6">
+            <li className="inline-flex items-center gap-2">
+              <SparkIcon /> AI-powered analysis
+            </li>
+            <li className="inline-flex items-center gap-2">
+              <GlobeMini /> 1 free analysis — no signup needed
+            </li>
+            <li className="inline-flex items-center gap-2">
+              <ClockIcon /> Actionable insights in minutes
+            </li>
+          </ul>
         </div>
-        <ReportView report={sampleReport} mode="sample" />
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 pb-14">
-        <h2 className="text-2xl font-semibold">Pricing</h2>
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
-          <Card>
-            <h3 className="text-lg font-semibold">Free</h3>
-            <p className="mt-2 text-3xl font-semibold">$0</p>
-            <p className="mt-2 text-sm leading-6 text-muted">Run a homepage audit without a credit card. A limited monthly allowance applies once you create an account.</p>
-            <ButtonLink href="/#audit" className="mt-5">Run free audit</ButtonLink>
-          </Card>
-          <Card>
-            <h3 className="text-lg font-semibold">Pro</h3>
-            <p className="mt-2 text-3xl font-semibold">$19<span className="text-sm font-medium text-muted">/mo</span></p>
-            <p className="mt-2 text-sm leading-6 text-muted">30 audits, full AI suggestions, history, PDF print, and shareable report links.</p>
-            <ButtonLink href="/pricing" variant="secondary" className="mt-5">Compare plans</ButtonLink>
-          </Card>
+      <section className="mx-auto max-w-6xl px-4 pb-24">
+        <div className="text-center">
+          <h2 className="text-3xl font-semibold tracking-tight text-ink sm:text-4xl">6 Modules. One Complete Audit.</h2>
+          <p className="mt-3 text-muted">Every angle of your search visibility analyzed and scored.</p>
         </div>
-        <p className="mt-3 text-sm text-muted">Agency is $49/mo and marked coming soon. It is not available to purchase yet.</p>
+        <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {modules.map((item) => (
+            <Link
+              key={item.title}
+              href={item.href}
+              className="group border border-line bg-white p-6 hover:border-primary"
+            >
+              <span className="inline-flex h-10 w-10 items-center justify-center bg-primary text-white">
+                <ModuleIcon name={item.icon} />
+              </span>
+              <h3 className="mt-8 text-lg font-semibold text-ink">{item.title}</h3>
+              <p className="mt-2 text-sm leading-6 text-muted">{item.body}</p>
+            </Link>
+          ))}
+        </div>
       </section>
 
-      <section className="mx-auto max-w-3xl px-4 pb-16">
+      <section className="mx-auto grid max-w-6xl gap-4 px-4 pb-20 md:grid-cols-2">
+        <Card>
+          <h2 className="text-lg font-semibold">Free</h2>
+          <p className="mt-2 text-3xl font-semibold">$0</p>
+          <p className="mt-2 text-sm leading-6 text-muted">One homepage analysis, no card. Create an account when you want history.</p>
+          <ButtonLink href="/#audit" className="mt-5">Analyze a site</ButtonLink>
+        </Card>
+        <Card>
+          <h2 className="text-lg font-semibold">Pro</h2>
+          <p className="mt-2 text-3xl font-semibold">$19<span className="text-sm font-medium text-muted">/mo</span></p>
+          <p className="mt-2 text-sm leading-6 text-muted">30 audits, full suggestions, history, PDF print, and shareable report links.</p>
+          <ButtonLink href="/pricing" variant="secondary" className="mt-5">Compare plans</ButtonLink>
+        </Card>
+      </section>
+
+      <section className="mx-auto max-w-3xl px-4 pb-20">
         <h2 className="text-2xl font-semibold">Questions</h2>
-        <div className="mt-4 divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white">
+        <div className="mt-4 divide-y divide-line border border-line bg-white">
           {faqs.map((item) => (
             <details key={item.q} className="px-4 py-3">
               <summary className="cursor-pointer text-sm font-semibold">{item.q}</summary>
@@ -165,5 +147,81 @@ export default function HomePage() {
         <p className="mt-4 text-sm leading-6 text-muted">{RANKING_DISCLAIMER}</p>
       </section>
     </div>
+  );
+}
+
+function ModuleIcon({ name }: { name: (typeof modules)[number]["icon"] }) {
+  const common = { width: 18, height: 18, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.8 };
+  if (name === "shield") {
+    return (
+      <svg {...common} aria-hidden="true">
+        <path d="M12 3 5 6v6c0 4.5 2.8 7.4 7 9 4.2-1.6 7-4.5 7-9V6l-7-3z" />
+      </svg>
+    );
+  }
+  if (name === "nodes") {
+    return (
+      <svg {...common} aria-hidden="true">
+        <circle cx="7" cy="8" r="2" />
+        <circle cx="17" cy="7" r="2" />
+        <circle cx="12" cy="17" r="2" />
+        <path d="M9 9.2 11 15M15 8.8 13 15M9 8h6" />
+      </svg>
+    );
+  }
+  if (name === "link") {
+    return (
+      <svg {...common} aria-hidden="true">
+        <path d="M10 13a5 5 0 0 0 7.1.1l1.4-1.4a5 5 0 0 0-7.1-7.1L10 6" />
+        <path d="M14 11a5 5 0 0 0-7.1-.1L5.5 12.3a5 5 0 0 0 7.1 7.1L14 18" />
+      </svg>
+    );
+  }
+  if (name === "user") {
+    return (
+      <svg {...common} aria-hidden="true">
+        <circle cx="12" cy="8" r="3" />
+        <path d="M5 19c1.4-3 3.6-4.5 7-4.5S17.6 16 19 19" />
+      </svg>
+    );
+  }
+  if (name === "chart") {
+    return (
+      <svg {...common} aria-hidden="true">
+        <path d="M4 19h16M7 16l3.2-4 2.6 2.2L17 8" />
+        <path d="M14 8h3v3" />
+      </svg>
+    );
+  }
+  return (
+    <svg {...common} aria-hidden="true">
+      <path d="M13 3 6 13h5l-1 8 8-12h-5l0-6z" />
+    </svg>
+  );
+}
+
+function SparkIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0E8F6E" strokeWidth="1.8" aria-hidden="true">
+      <path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18" />
+    </svg>
+  );
+}
+
+function GlobeMini() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0E8F6E" strokeWidth="1.8" aria-hidden="true">
+      <circle cx="12" cy="12" r="8" />
+      <path d="M4 12h16M12 4c2 2.4 3 5 3 8s-1 5.6-3 8c-2-2.4-3-5-3-8s1-5.6 3-8z" />
+    </svg>
+  );
+}
+
+function ClockIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0E8F6E" strokeWidth="1.8" aria-hidden="true">
+      <circle cx="12" cy="12" r="8" />
+      <path d="M12 8v5l3 2" />
+    </svg>
   );
 }

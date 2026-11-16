@@ -14,7 +14,7 @@ export default function AiVisibilityPage() {
     <div className="mx-auto max-w-3xl px-4 py-12">
       <p className="text-sm font-semibold text-primary">Readiness, not tracking</p>
       <h1 className="mt-2 text-4xl font-semibold tracking-tight">Check whether AI search can read your site</h1>
-      <div className="mt-5 rounded-xl border border-slate-200 border-l-4 border-l-primary bg-white px-4 py-3 text-sm leading-6">
+      <div className="mt-5 rounded-xl border border-line border-l-4 border-l-primary bg-card px-4 py-3 text-sm leading-6">
         This is not a visibility tracker. SitePulse does not watch mentions in ChatGPT, Google AI Overviews, or Perplexity. {RANKING_DISCLAIMER} Allowing a crawler does not mean you will be cited.
       </div>
       <p className="mt-5 text-base leading-7 text-muted">
@@ -23,7 +23,7 @@ export default function AiVisibilityPage() {
       <p className="mt-3 text-base leading-7 text-muted">
         The readiness score combines those technical facts. A blocked crawler, a page that is mostly images, or structured data that does not match the visible text will lower it. A clean robots.txt and a clear H1 will not, by themselves, create demand.
       </p>
-      <div className="mt-8 rounded-xl border border-slate-200 bg-white p-5">
+      <div className="mt-8 rounded-xl border border-line bg-card p-5">
         <h2 className="text-lg font-semibold">Run an AI readiness check</h2>
         <p className="mb-4 mt-1 text-sm text-muted">Focus is AI access and understandability. It will not tell you how often you are mentioned.</p>
         <UrlForm focus="ai" id="ai-visibility-url" buttonLabel="Check readiness" />

@@ -28,7 +28,7 @@ export default function ShopifySeoPage() {
       <p className="mt-3 text-base leading-7 text-muted">
         The useful work on Shopify is usually on the product template, not on a blog post about keywords. Collection pages and the homepage matter, but a product URL is where price, availability, and unique copy either show up or do not. Submit a product page if that is the template you want judged. Submit the homepage if you want the front door.
       </p>
-      <div className="mt-8 rounded-xl border border-slate-200 bg-white p-5">
+      <div className="mt-8 rounded-xl border border-line bg-card p-5">
         <h2 className="text-lg font-semibold">Check a Shopify URL</h2>
         <p className="mb-4 mt-1 text-sm text-muted">Use your public store domain, not the admin. A product URL is welcome. Nothing is installed on the shop.</p>
         <UrlForm focus="shopify" id="shopify-url" buttonLabel="Check Shopify SEO" />
@@ -42,7 +42,7 @@ export default function ShopifySeoPage() {
           </section>
         ))}
       </div>
-      <p className="mt-8 rounded-xl bg-white p-4 text-sm leading-6 text-muted">
+      <p className="mt-8 rounded-xl bg-card p-4 text-sm leading-6 text-muted">
         SitePulse does not change your theme, create redirects, or edit products. If a check fails, the recommendation is something you or your theme developer can do in Shopify admin. For a walkthrough, read <Link href="/blog/how-to-improve-shopify-product-page-seo" className="font-semibold text-primary">how to improve Shopify product page SEO</Link>.
       </p>
     </div>

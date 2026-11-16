@@ -35,7 +35,7 @@ export default function PricingPage() {
               {plan.id === "free" ? <ButtonLink href="/#audit">Run free audit</ButtonLink> : null}
               {plan.id === "pro" ? <ButtonLink href="/app/billing">Upgrade to Pro</ButtonLink> : null}
               {plan.id === "agency" ? (
-                <button type="button" disabled className="inline-flex h-11 cursor-not-allowed items-center rounded-xl border border-slate-200 px-4 text-sm font-semibold text-muted">
+                <button type="button" disabled className="inline-flex h-11 cursor-not-allowed items-center rounded-xl border border-line px-4 text-sm font-semibold text-muted">
                   Coming soon
                 </button>
               ) : null}

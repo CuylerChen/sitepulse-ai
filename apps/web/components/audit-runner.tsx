@@ -137,7 +137,7 @@ export function AuditRunner({ id, eta }: { id: string; eta?: string }) {
             <li key={step} className="flex items-center gap-3 text-sm">
               <span
                 className={`inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold ${
-                  active ? "bg-primary text-white" : done ? "bg-green-50 text-success" : "bg-slate-100 text-muted"
+                  active ? "bg-primary text-white" : done ? "bg-primary/10 text-primary" : "bg-page text-muted"
                 }`}
                 aria-hidden="true"
               >

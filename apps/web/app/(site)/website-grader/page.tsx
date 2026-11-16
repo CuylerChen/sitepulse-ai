@@ -27,16 +27,16 @@ export default function WebsiteGraderPage() {
       <p className="mt-3 text-base leading-7 text-muted">
         Category scores sit next to the overall grade: SEO, performance, AI readiness, and content. If performance data is missing, that card says Not available. It is not scored as zero, and it should not drag a story you cannot support.
       </p>
-      <div className="mt-8 rounded-xl border border-slate-200 bg-white p-5">
+      <div className="mt-8 rounded-xl border border-line bg-card p-5">
         <h2 className="text-lg font-semibold">Grade this homepage</h2>
         <p className="mb-4 mt-1 text-sm text-muted">This run is score-focused. You still get the checks that produced the grade.</p>
         <UrlForm focus="grader" id="grader-url" buttonLabel="Grade my site" />
       </div>
       <h2 className="mt-12 text-2xl font-semibold">Grade bands</h2>
-      <div className="mt-4 overflow-x-auto rounded-xl border border-slate-200">
-      <table className="w-full min-w-[520px] border-collapse bg-white text-sm">
+      <div className="mt-4 overflow-x-auto rounded-xl border border-line">
+      <table className="w-full min-w-[520px] border-collapse bg-card text-sm">
         <thead>
-          <tr className="border-b border-slate-200 text-left text-muted">
+          <tr className="border-b border-line text-left text-muted">
             <th className="px-3 py-2 font-medium">Score</th>
             <th className="px-3 py-2 font-medium">Grade</th>
             <th className="px-3 py-2 font-medium">What it means</th>
@@ -44,7 +44,7 @@ export default function WebsiteGraderPage() {
         </thead>
         <tbody>
           {bands.map((band) => (
-            <tr key={band.grade} className="border-b border-slate-100 last:border-b-0">
+            <tr key={band.grade} className="border-b border-line last:border-b-0">
               <td className="px-3 py-3 font-semibold">{band.range}</td>
               <td className="px-3 py-3">{band.grade}</td>
               <td className="px-3 py-3 text-muted">{band.label}</td>

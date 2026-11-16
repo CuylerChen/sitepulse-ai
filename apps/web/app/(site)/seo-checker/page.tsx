@@ -28,22 +28,22 @@ export default function SeoCheckerPage() {
       <p className="mt-3 text-base leading-7 text-muted">
         That is the right first pass for an independent shop. If the homepage is noindex, or the title is still the theme default, keyword research will not help. Fix the page, then measure traffic in Search Console, which this tool does not replace.
       </p>
-      <div className="mt-8 rounded-xl border border-slate-200 bg-white p-5">
+      <div className="mt-8 rounded-xl border border-line bg-card p-5">
         <h2 className="text-lg font-semibold">Check SEO on this URL</h2>
         <p className="mb-4 mt-1 text-sm text-muted">The scan focuses on SEO signals. Other categories may still appear if the service returns them, but the brief is on-page search.</p>
         <UrlForm focus="seo" id="seo-url" buttonLabel="Check SEO" />
       </div>
       <h2 className="mt-12 text-2xl font-semibold">How to read pass, warning, and fail</h2>
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
+        <div className="rounded-xl border border-line bg-card p-4">
           <p className="text-sm font-semibold text-success">Pass</p>
           <p className="mt-2 text-sm leading-6 text-muted">The signal is present and not obviously broken. A pass is not a ranking.</p>
         </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
+        <div className="rounded-xl border border-line bg-card p-4">
           <p className="text-sm font-semibold text-warning">Needs attention</p>
           <p className="mt-2 text-sm leading-6 text-muted">Something is thin, long, or inconsistent. Worth a look this week.</p>
         </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
+        <div className="rounded-xl border border-line bg-card p-4">
           <p className="text-sm font-semibold text-error">Fail</p>
           <p className="mt-2 text-sm leading-6 text-muted">A blocker such as a missing title, a noindex, or a page that did not return HTML.</p>
         </div>

@@ -52,7 +52,7 @@ export function AuditsClient() {
       {audits && audits.length > 0 ? (
         <Card className="overflow-x-auto p-0">
           <table className="w-full min-w-[640px] text-left text-sm">
-            <thead className="border-b border-slate-200 text-muted">
+            <thead className="border-b border-line text-muted">
               <tr>
                 <th className="px-4 py-3 font-medium">Site</th>
                 <th className="px-4 py-3 font-medium">Status</th>
@@ -63,7 +63,7 @@ export function AuditsClient() {
             </thead>
             <tbody>
               {audits.map((audit) => (
-                <tr key={audit.id} className="border-b border-slate-100 last:border-b-0">
+                <tr key={audit.id} className="border-b border-line last:border-b-0">
                   <td className="px-4 py-3">
                     <Link href={`/audits/${audit.id}`} className="font-medium text-ink hover:text-primary">
                       {audit.domain || audit.requested_url}

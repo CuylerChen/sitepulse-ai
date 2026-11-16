@@ -63,7 +63,7 @@ export function SettingsClient() {
         <form onSubmit={onSubmit} className="space-y-4" noValidate>
           <div>
             <label htmlFor="email" className={labelClass}>Email</label>
-            <input id="email" name="email" value={user?.email || ""} readOnly className={`${inputClass} bg-slate-50`} />
+            <input id="email" name="email" value={user?.email || ""} readOnly className={`${inputClass} bg-page`} />
           </div>
           <div>
             <label htmlFor="name" className={labelClass}>Name</label>

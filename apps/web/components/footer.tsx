@@ -24,7 +24,7 @@ const company = [
 
 export function Footer() {
   return (
-    <footer className="site-footer border-t border-slate-200 bg-white">
+    <footer className="site-footer border-t border-line bg-white">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-4">
         <div className="sm:col-span-2">
           <Logo />
@@ -57,7 +57,7 @@ export function Footer() {
           </ul>
         </div>
       </div>
-      <div className="border-t border-slate-200">
+      <div className="border-t border-line">
         <p className="mx-auto max-w-6xl px-4 py-4 text-sm leading-6 text-muted">{RANKING_DISCLAIMER}</p>
       </div>
     </footer>

@@ -15,7 +15,7 @@ export default function NotFound() {
         </p>
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
           <ButtonLink href="/">Go to the homepage</ButtonLink>
-          <Link href="/#audit" className="inline-flex h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold">
+          <Link href="/#audit" className="inline-flex h-11 items-center justify-center rounded-xl border border-line bg-card px-4 text-sm font-semibold">
             Run free audit
           </Link>
         </div>

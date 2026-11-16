@@ -7,21 +7,18 @@ type ScoreRingProps = {
   label?: string;
 };
 
-export function ScoreRing({ score, size = 128, tone = "light", label = "Overall score" }: ScoreRingProps) {
-  const stroke = 10;
+export function ScoreRing({ score, size = 128, label = "Overall score" }: ScoreRingProps) {
+  const stroke = 8;
   const radius = (size - stroke) / 2;
   const center = size / 2;
   const circumference = 2 * Math.PI * radius;
   const hasScore = score != null && !Number.isNaN(score);
   const pct = hasScore ? Math.max(0, Math.min(100, score)) : 0;
   const offset = circumference - (pct / 100) * circumference;
-  const track = tone === "light" ? "rgba(255,255,255,0.16)" : "#E2E8F0";
-  const arc = tone === "light" ? "#60A5FA" : "#2563EB";
-  const text = tone === "light" ? "#FFFFFF" : "#0F172A";
-  const muted = tone === "light" ? "rgba(255,255,255,0.72)" : "#64748B";
-  const angle = ((-90 + (pct / 100) * 360) * Math.PI) / 180;
-  const dotX = center + radius * Math.cos(angle);
-  const dotY = center + radius * Math.sin(angle);
+  const track = "#E3E6EB";
+  const arc = "#0E8F6E";
+  const text = "#16181D";
+  const muted = "#5E6772";
 
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-label={`${label}: ${formatScore(score)} out of 100`}>
@@ -34,13 +31,13 @@ export function ScoreRing({ score, size = 128, tone = "light", label = "Overall 
           fill="none"
           stroke={arc}
           strokeWidth={stroke}
-          strokeLinecap="round"
+          strokeLinecap="butt"
           strokeDasharray={circumference}
           strokeDashoffset={offset}
           transform={`rotate(-90 ${center} ${center})`}
         />
       ) : null}
-      {hasScore && pct > 0 ? <circle cx={dotX} cy={dotY} r="4.5" fill="#6366F1" /> : null}
+
       <text x={center} y={center - 6} textAnchor="middle" fill={text} fontSize={size > 100 ? 32 : 22} fontWeight="650">
         {hasScore ? score : "—"}
       </text>

@@ -14,7 +14,7 @@ export default function BotPage() {
       <p className="mt-4 text-base leading-7 text-muted">
         SitePulse does not wander the web. A request happens only after someone submits a URL in the product. The user agent on that request is:
       </p>
-      <pre className="mt-4 overflow-x-auto rounded-xl border border-slate-200 bg-white p-4 text-sm text-ink">{USER_AGENT}</pre>
+      <pre className="mt-4 overflow-x-auto rounded-xl border border-line bg-card p-4 text-sm text-ink">{USER_AGENT}</pre>
       <h2 className="mt-10 text-2xl font-semibold">What we fetch</h2>
       <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-6 text-muted">
         <li>The page at the URL the visitor submitted. That is usually a homepage, and it can be a product URL if that is what they pasted.</li>
@@ -29,7 +29,7 @@ export default function BotPage() {
       <p className="mt-3 text-sm leading-6 text-muted">
         You can match the user agent token SitePulseBot in your logs. A robots.txt group looks like this:
       </p>
-      <pre className="mt-3 overflow-x-auto rounded-xl border border-slate-200 bg-white p-4 text-sm">{`User-agent: SitePulseBot
+      <pre className="mt-3 overflow-x-auto rounded-xl border border-line bg-card p-4 text-sm">{`User-agent: SitePulseBot
 Disallow: /`}</pre>
       <p className="mt-3 text-sm leading-6 text-muted">
         That group tells well-behaved clients to stay out. A scan still starts only when a person submits a URL. If a request from this agent is a problem, use the <Link href="/contact" className="font-semibold text-primary">contact form</Link> and include the time and URL from your logs.

@@ -5,7 +5,7 @@ export function ErrorNote({ error }: { error: ApiError | null }) {
   if (!error) return null;
   const quota = error.code === "QUOTA_EXCEEDED";
   return (
-    <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-error">
+    <div role="alert" className="rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-error">
       <p>{error.message}</p>
       {quota ? (
         <p className="mt-1 text-ink">

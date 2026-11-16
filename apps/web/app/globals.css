@@ -11,13 +11,18 @@ html {
 }
 
 body {
-  background: #f8fafc;
-  color: #0f172a;
+  background: #f7f8fa;
+  color: #16181d;
 }
 
 :focus-visible {
-  outline: 2px solid #2563eb;
+  outline: 2px solid #0e8f6e;
   outline-offset: 2px;
+}
+
+::selection {
+  background: #d7f3ea;
+  color: #16181d;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -35,10 +40,6 @@ body {
 
   body {
     background: #fff !important;
-  }
-
-  .score-panel {
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
+    color: #16181d !important;
   }
 }

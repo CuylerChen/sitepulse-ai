@@ -63,7 +63,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="site-header border-b border-slate-200 bg-white">
+      <header className="site-header border-b border-line bg-white">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4">
           <Logo href="/app/dashboard" />
           <nav className="hidden items-center gap-1 md:flex" aria-label="Account">
@@ -72,7 +72,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
                 key={link.href}
                 href={link.href}
                 className={`inline-flex h-11 items-center rounded-xl px-3 text-sm font-medium ${
-                  pathname === link.href ? "bg-slate-100 text-ink" : "text-muted hover:text-ink"
+                  pathname === link.href ? "bg-page text-ink" : "text-muted hover:bg-page hover:text-ink"
                 }`}
                 aria-current={pathname === link.href ? "page" : undefined}
               >
@@ -83,19 +83,19 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
           <div className="hidden items-center gap-3 md:flex">
             <p className="text-sm text-muted">
               {user.name || user.email}
-              <span className="text-slate-300"> · </span>
+              <span className="text-muted"> · </span>
               {planLabel(user.plan)}
             </p>
-            <button type="button" onClick={() => void logout()} className="inline-flex h-11 items-center rounded-xl px-3 text-sm font-semibold text-ink hover:bg-slate-50">
+            <button type="button" onClick={() => void logout()} className="inline-flex h-11 items-center px-3 text-sm font-semibold text-ink hover:bg-page">
               Log out
             </button>
           </div>
-          <button type="button" className="inline-flex h-11 items-center rounded-xl border border-slate-200 px-3 text-sm font-semibold md:hidden" onClick={() => setOpen((value) => !value)} aria-expanded={open}>
+          <button type="button" className="inline-flex h-11 items-center rounded-xl border border-line px-3 text-sm font-semibold md:hidden" onClick={() => setOpen((value) => !value)} aria-expanded={open}>
             Menu
           </button>
         </div>
         {open ? (
-          <div className="border-t border-slate-200 px-4 py-3 md:hidden">
+          <div className="border-t border-line px-4 py-3 md:hidden">
             {links.map((link) => (
               <Link key={link.href} href={link.href} className="flex h-11 items-center text-sm font-medium text-ink">
                 {link.label}
@@ -110,7 +110,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
       <main id="main" className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
         {children}
       </main>
-      <footer className="site-footer border-t border-slate-200">
+      <footer className="site-footer border-t border-line">
         <p className="mx-auto max-w-6xl px-4 py-4 text-sm text-muted">{RANKING_DISCLAIMER}</p>
       </footer>
     </div>

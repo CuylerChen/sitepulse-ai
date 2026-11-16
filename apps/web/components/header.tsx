@@ -64,14 +64,14 @@ export function Header() {
   }, []);
 
   return (
-    <header className="site-header sticky top-0 z-40 border-b border-slate-200 bg-white">
+    <header className="site-header sticky top-0 z-40 border-b border-line bg-white">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4">
         <Logo />
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
           <div className="relative" ref={wrapRef}>
             <button
               type="button"
-              className="inline-flex h-11 items-center rounded-xl px-3 text-sm font-medium text-ink hover:bg-slate-50"
+              className="inline-flex h-11 items-center px-3 text-sm font-medium text-ink hover:bg-page"
               aria-expanded={featuresOpen}
               aria-controls={featuresId}
               onClick={() => setFeaturesOpen((value) => !value)}
@@ -79,9 +79,9 @@ export function Header() {
               Features
             </button>
             {featuresOpen ? (
-              <div id={featuresId} className="absolute left-0 top-12 w-80 rounded-xl border border-slate-200 bg-white p-2 shadow-card">
+              <div id={featuresId} className="absolute left-0 top-12 w-80 border border-line bg-white p-1">
                 {features.map((item) => (
-                  <Link key={item.href} href={item.href} className="block rounded-lg px-3 py-2 hover:bg-slate-50">
+                  <Link key={item.href} href={item.href} className="block px-3 py-2 hover:bg-page">
                     <span className="block text-sm font-medium text-ink">{item.label}</span>
                     <span className="block text-xs text-muted">{item.detail}</span>
                   </Link>
@@ -89,28 +89,28 @@ export function Header() {
               </div>
             ) : null}
           </div>
-          <Link href="/pricing" className="inline-flex h-11 items-center rounded-xl px-3 text-sm font-medium text-ink hover:bg-slate-50">
+          <Link href="/pricing" className="inline-flex h-11 items-center px-3 text-sm font-medium text-ink hover:bg-page">
             Pricing
           </Link>
-          <Link href="/blog" className="inline-flex h-11 items-center rounded-xl px-3 text-sm font-medium text-ink hover:bg-slate-50">
+          <Link href="/blog" className="inline-flex h-11 items-center px-3 text-sm font-medium text-ink hover:bg-page">
             Blog
           </Link>
         </nav>
         <div className="hidden items-center gap-2 lg:flex">
           {authed ? (
-            <Link href="/app/dashboard" className="inline-flex h-11 items-center rounded-xl px-3 text-sm font-semibold text-ink">
+            <Link href="/app/dashboard" className="inline-flex h-11 items-center px-3 text-sm font-semibold text-ink">
               Dashboard
             </Link>
           ) : (
-            <Link href="/login" className="inline-flex h-11 items-center rounded-xl px-3 text-sm font-semibold text-ink">
+            <Link href="/login" className="inline-flex h-11 items-center px-3 text-sm font-semibold text-ink">
               Login
             </Link>
           )}
-          <ButtonLink href="/#audit">Run free audit</ButtonLink>
+          <ButtonLink href="/#audit">Analyze</ButtonLink>
         </div>
         <button
           type="button"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 lg:hidden"
+          className="inline-flex h-11 w-11 items-center justify-center border border-line lg:hidden"
           aria-expanded={open}
           aria-controls={menuId}
           onClick={() => setOpen((value) => !value)}
@@ -124,7 +124,7 @@ export function Header() {
         </button>
       </div>
       {open ? (
-        <div id={menuId} className="border-t border-slate-200 px-4 py-3 lg:hidden">
+        <div id={menuId} className="border-t border-line bg-page px-4 py-3 lg:hidden">
           <div className="flex flex-col">
             {features.map((item) => (
               <Link key={item.href} href={item.href} className="flex h-11 items-center text-sm font-medium text-ink">
@@ -147,7 +147,7 @@ export function Header() {
               </Link>
             )}
             <ButtonLink href="/#audit" className="mt-2">
-              Run free audit
+              Analyze
             </ButtonLink>
           </div>
         </div>

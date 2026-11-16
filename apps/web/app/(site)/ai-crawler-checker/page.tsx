@@ -49,14 +49,14 @@ export default function AiCrawlerPage() {
       </p>
       <div className="mt-8 space-y-3">
         {bots.map((bot) => (
-          <article key={bot.name} className="rounded-xl border border-slate-200 bg-white p-4">
+          <article key={bot.name} className="rounded-xl border border-line bg-card p-4">
             <h2 className="text-lg font-semibold">{bot.name}</h2>
             <p className="text-xs font-semibold uppercase tracking-wide text-muted">{bot.role}</p>
             <p className="mt-2 text-sm leading-6 text-muted">{bot.body}</p>
           </article>
         ))}
       </div>
-      <div className="mt-8 rounded-xl border border-slate-200 bg-white p-5">
+      <div className="mt-8 rounded-xl border border-line bg-card p-5">
         <h2 className="text-lg font-semibold">Check these crawlers on your homepage</h2>
         <p className="mb-4 mt-1 text-sm text-muted">The check uses the AI focus and reports each agent separately. It does not simulate a crawl from those companies.</p>
         <UrlForm focus="ai" id="crawler-url" buttonLabel="Check crawlers" />

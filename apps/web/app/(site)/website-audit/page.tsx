@@ -35,13 +35,13 @@ export default function WebsiteAuditPage() {
       <p className="mt-3 text-base leading-7 text-muted">
         Use it when a redesign just shipped, a theme app started adding tags, or you want a second opinion before hiring an SEO freelancer. The result is a score plus a list of checks. Critical and high issues are listed first, with steps you can hand to whoever edits the theme.
       </p>
-      <div className="mt-8 rounded-xl border border-slate-200 bg-white p-5">
+      <div className="mt-8 rounded-xl border border-line bg-card p-5">
         <h2 className="text-lg font-semibold">Run the full homepage audit</h2>
         <p className="mb-4 mt-1 text-sm text-muted">This form uses the full check set: SEO, performance when available, AI readiness, content, and Shopify signals if they apply.</p>
         <UrlForm focus="full" id="website-audit-url" />
       </div>
       <h2 className="mt-12 text-2xl font-semibold">What this audit covers</h2>
-      <ul className="mt-4 divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white">
+      <ul className="mt-4 divide-y divide-line rounded-xl border border-line bg-card">
         {checklist.map((item) => (
           <li key={item.title} className="px-4 py-3">
             <p className="text-sm font-semibold">{item.title}</p>

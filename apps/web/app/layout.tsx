@@ -22,18 +22,18 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#F8FAFC",
+  themeColor: "#F7F8FA",
   width: "device-width",
   initialScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body className="min-h-screen bg-page font-sans text-ink antialiased">
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
+      <body className="min-h-screen bg-page font-sans text-ink antialiased" suppressHydrationWarning>
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-xl focus:bg-white focus:px-3 focus:py-2"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-xl focus:bg-card focus:px-3 focus:py-2"
         >
           Skip to content
         </a>

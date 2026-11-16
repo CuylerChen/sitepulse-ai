@@ -37,11 +37,11 @@ const SCORE_CARDS = [
 ];
 
 function badgeClass(kind: string): string {
-  if (kind === "critical" || kind === "fail") return "bg-red-50 text-error";
-  if (kind === "high" || kind === "warning") return "bg-amber-50 text-warning";
-  if (kind === "pass") return "bg-green-50 text-success";
-  if (kind === "medium") return "bg-amber-50 text-warning";
-  return "bg-slate-100 text-muted";
+  if (kind === "critical" || kind === "fail") return "bg-red-500/15 text-error";
+  if (kind === "high" || kind === "warning") return "bg-warning/15 text-warning";
+  if (kind === "pass") return "bg-primary/15 text-primary";
+  if (kind === "medium") return "bg-warning/15 text-warning";
+  return "bg-page text-muted";
 }
 
 function absoluteShareUrl(info: ShareInfo | null | undefined, fallback: string): string {
@@ -128,7 +128,7 @@ function IssueCard({ issue }: { issue: AiIssue }) {
         </ol>
       ) : null}
       {issue.suggested_copy ? (
-        <div className="mt-4 rounded-xl border border-slate-200 bg-page p-3">
+        <div className="mt-4 rounded-xl border border-line bg-page p-3">
           <div className="flex items-start justify-between gap-3">
             <p className="text-sm leading-6 text-ink">{issue.suggested_copy}</p>
             <CopyButton text={issue.suggested_copy} />
@@ -141,7 +141,7 @@ function IssueCard({ issue }: { issue: AiIssue }) {
 
 function CheckCard({ check }: { check: Check }) {
   return (
-    <article className="border-b border-slate-100 py-4 last:border-b-0">
+    <article className="border-b border-line py-4 last:border-b-0">
       <div className="flex flex-wrap items-center gap-2">
         <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${badgeClass(check.status)}`}>
           {statusLabel(check.status)}
@@ -252,7 +252,7 @@ function PdfControl() {
     );
   }
   return (
-    <div className="no-print rounded-xl border border-slate-200 bg-page px-3 py-2">
+    <div className="no-print rounded-xl border border-line bg-page px-3 py-2">
       <p className="text-sm text-ink">PDF export is included with Pro.</p>
       <Link href="/pricing" className="mt-1 inline-flex text-sm font-semibold text-primary">
         See Pro pricing
@@ -334,10 +334,10 @@ function ShareBar({
         ) : null}
         {published ? (
           <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-            <a className="inline-flex h-11 items-center justify-center rounded-xl bg-primary px-4 text-sm font-semibold text-white" href={xHref} target="_blank" rel="noreferrer">
+            <a className="inline-flex h-11 items-center justify-center rounded-sm bg-primary px-4 text-sm font-semibold text-white" href={xHref} target="_blank" rel="noreferrer">
               Share on X
             </a>
-            <a className="inline-flex h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-ink" href={linkedInHref} target="_blank" rel="noreferrer">
+            <a className="inline-flex h-11 items-center justify-center rounded-xl border border-line bg-card px-4 text-sm font-semibold text-ink" href={linkedInHref} target="_blank" rel="noreferrer">
               Share on LinkedIn
             </a>
             <Button
@@ -423,7 +423,7 @@ export function ReportView({
   return (
     <div className="space-y-4">
       {mode === "sample" ? (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-warning">
+        <div className="rounded-xl border border-warning/30 bg-warning/10 px-4 py-3 text-sm font-semibold text-warning">
           Sample data — not a live scan
         </div>
       ) : null}
@@ -431,21 +431,21 @@ export function ReportView({
         <Logo />
         <p className="mt-2 text-sm text-muted">Website audit report</p>
       </div>
-      <section className="score-panel rounded-xl bg-navy p-6 text-white md:p-8">
+      <section className="score-panel border border-line bg-white p-6 md:p-8">
         <div className="flex flex-col items-start gap-6 md:flex-row md:items-center">
           <ScoreRing score={audit.overall_score} />
           <div className="min-w-0">
-            <p className="text-sm text-white/70">Grade</p>
-            <h1 className="mt-1 text-2xl font-semibold tracking-tight md:text-3xl">
+            <p className="text-sm text-muted">Grade</p>
+            <h1 className="mt-1 text-2xl font-semibold tracking-tight text-ink md:text-3xl">
               {audit.grade_label || audit.grade || "Audit report"}
             </h1>
-            <p className="mt-2 break-all text-sm text-white/80">{audit.domain || audit.requested_url}</p>
-            <p className="mt-1 text-sm text-white/60">
+            <p className="mt-2 break-all text-sm text-ink">{audit.domain || audit.requested_url}</p>
+            <p className="mt-1 text-sm text-muted">
               {mode === "sample" ? "Sample preview" : `Scanned ${formatDate(audit.scanned_at)}`}
             </p>
             <div className="mt-3 flex flex-wrap gap-2 text-xs">
-              {audit.grade ? <span className="rounded-full bg-white/10 px-2 py-1">{audit.grade}</span> : null}
-              {audit.platform ? <span className="rounded-full bg-white/10 px-2 py-1">{platformLabel(audit.platform)}</span> : null}
+              {audit.grade ? <span className="bg-page px-2 py-1 text-ink">{audit.grade}</span> : null}
+              {audit.platform ? <span className="bg-page px-2 py-1 text-ink">{platformLabel(audit.platform)}</span> : null}
             </div>
           </div>
         </div>
@@ -473,7 +473,7 @@ export function ReportView({
         })}
       </div>
 
-      <div className="rounded-xl border border-slate-200 border-l-4 border-l-primary bg-white px-4 py-3 text-sm leading-6 text-ink">
+      <div className="rounded-xl border border-line border-l-4 border-l-primary bg-card px-4 py-3 text-sm leading-6 text-ink">
         {disclaimer}
       </div>
       {extraDisclaimers.map((item) => (

@@ -28,7 +28,7 @@ export function ContactForm() {
 
   if (sent) {
     return (
-      <div role="status" className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-success">
+      <div role="status" className="rounded-xl border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-success">
         Thanks. We received your message and will reply by email.
       </div>
     );
@@ -46,7 +46,7 @@ export function ContactForm() {
       </div>
       <div>
         <label htmlFor="message" className={labelClass}>Message</label>
-        <textarea id="message" name="message" required maxLength={5000} rows={6} value={message} disabled={pending} onChange={(event) => setMessage(event.target.value)} className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-ink disabled:bg-slate-50" />
+        <textarea id="message" name="message" required maxLength={5000} rows={6} value={message} disabled={pending} onChange={(event) => setMessage(event.target.value)} className="w-full rounded-xl border border-line px-3 py-2 text-sm text-ink disabled:bg-page" />
       </div>
       <ErrorNote error={error} />
       <Button type="submit" disabled={pending}>{pending ? "Sending…" : "Send message"}</Button>

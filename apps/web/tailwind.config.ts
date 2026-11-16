@@ -5,24 +5,26 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: "#2563EB",
-        accent: "#6366F1",
-        success: "#16A34A",
-        warning: "#D97706",
+        primary: "#0E8F6E",
+        accent: "#0E8F6E",
+        success: "#0E8F6E",
+        warning: "#B45309",
         error: "#DC2626",
-        page: "#F8FAFC",
-        ink: "#0F172A",
-        muted: "#64748B",
-        navy: "#0F172A",
+        page: "#F7F8FA",
+        ink: "#16181D",
+        muted: "#5E6772",
+        navy: "#FFFFFF",
+        card: "#FFFFFF",
+        line: "#E3E6EB",
       },
       borderRadius: {
-        card: "12px",
+        card: "4px",
       },
       fontFamily: {
         sans: ["var(--font-inter)", "ui-sans-serif", "system-ui", "sans-serif"],
       },
       boxShadow: {
-        card: "0 1px 2px rgba(15, 23, 42, 0.04)",
+        card: "none",
       },
     },
   },
