@@ -13,7 +13,7 @@ Enter a public homepage URL. The product fetches that page, robots.txt, and a si
 - SEO, AI crawler rules, content structure, optional PageSpeed
 - Rule-based report always; LLM explanation only when configured and validated
 - Public share links that can be revoked
-- Email accounts, history, and Creem checkout for Pro at $19/month
+- Email accounts, history, and Waffo Pancake checkout for Pro at $19/month
 - Agency white-label, monitoring, and live AI ranking checks are out of scope
 
 ## Scores

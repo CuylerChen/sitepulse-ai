@@ -3,6 +3,7 @@ package httpapi
 import (
 	"context"
 	"crypto/rand"
+	"crypto/subtle"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
@@ -36,7 +37,6 @@ type Server struct {
 	limiter *limiter
 	psi     *pagespeed.Client
 	ai      aireport.Generator
-	creem   billing.Client
 }
 
 func New(cfg config.Config, store *storage.Store, log *slog.Logger) *Server {
@@ -44,9 +44,6 @@ func New(cfg config.Config, store *storage.Store, log *slog.Logger) *Server {
 		cfg: cfg, store: store, log: log, limiter: newLimiter(),
 		psi: &pagespeed.Client{APIKey: cfg.PageSpeedAPIKey, Cache: store},
 		ai:  aireport.Generator{APIKey: cfg.LLMAPIKey, BaseURL: cfg.LLMBaseURL, Model: cfg.LLMModel},
-		creem: billing.Client{
-			APIKey: cfg.CreemAPIKey, BaseURL: cfg.CreemAPIBase, WebhookSecret: cfg.CreemWebhookSecret, ProductID: cfg.CreemProductID,
-		},
 	}
 }
 
@@ -72,11 +69,9 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("GET /v1/websites", s.listWebsites)
 	mux.HandleFunc("DELETE /v1/websites/{id}", s.deleteWebsite)
 	mux.HandleFunc("GET /v1/billing/plans", s.plans)
-	mux.HandleFunc("POST /v1/billing/checkout", s.checkout)
 	mux.HandleFunc("GET /v1/billing/subscription", s.subscription)
-	mux.HandleFunc("POST /v1/billing/portal", s.portal)
 	mux.HandleFunc("POST /v1/billing/dev-upgrade", s.devUpgrade)
-	mux.HandleFunc("POST /v1/webhooks/creem", s.creemWebhook)
+	mux.HandleFunc("POST /v1/webhooks/waffo", s.waffoWebhook)
 	mux.HandleFunc("POST /v1/contact", s.contact)
 	return s.wrap(mux)
 }
@@ -159,7 +154,7 @@ func (s *Server) wrap(next http.Handler) http.Handler {
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 		w.Header().Set("Referrer-Policy", "strict-origin-when-cross-origin")
 		ctx := context.WithValue(r.Context(), ctxKey{}, reqID)
-		if r.Method != http.MethodGet && r.Method != http.MethodHead && r.URL.Path != "/v1/webhooks/creem" {
+		if r.Method != http.MethodGet && r.Method != http.MethodHead && r.URL.Path != "/v1/webhooks/waffo" {
 			if !s.originOK(r) {
 				writeErr(w, reqID, http.StatusForbidden, "FORBIDDEN", "This request was rejected.")
 				return
@@ -475,20 +470,6 @@ func (s *Server) plans(w http.ResponseWriter, r *http.Request) {
 	}})
 }
 
-func (s *Server) checkout(w http.ResponseWriter, r *http.Request) {
-	user, ok := s.currentUser(r)
-	if !ok {
-		writeErr(w, reqID(r), http.StatusUnauthorized, "UNAUTHORIZED", "Create an account before upgrading.")
-		return
-	}
-	url, err := s.creem.Checkout(r.Context(), user.ID, user.Email, s.cfg.AppBaseURL+"/app/billing?checkout=success")
-	if err != nil {
-		writeErr(w, reqID(r), http.StatusServiceUnavailable, "BILLING_NOT_CONFIGURED", "Checkout is not configured yet. Add Creem keys to enable Pro payments.")
-		return
-	}
-	writeOK(w, reqID(r), map[string]string{"checkout_url": url})
-}
-
 func (s *Server) subscription(w http.ResponseWriter, r *http.Request) {
 	user, ok := s.currentUser(r)
 	if !ok {
@@ -503,25 +484,6 @@ func (s *Server) subscription(w http.ResponseWriter, r *http.Request) {
 	writeOK(w, reqID(r), map[string]any{"plan": user.Plan, "status": sub.Status, "provider": sub.Provider, "current_period_end": sub.CurrentPeriodEnd})
 }
 
-func (s *Server) portal(w http.ResponseWriter, r *http.Request) {
-	user, ok := s.currentUser(r)
-	if !ok {
-		writeErr(w, reqID(r), http.StatusUnauthorized, "UNAUTHORIZED", "Sign in to manage billing.")
-		return
-	}
-	sub, err := s.store.LatestSubscription(r.Context(), user.ID)
-	if err != nil || sub.CustomerID == "" {
-		writeErr(w, reqID(r), http.StatusConflict, "BILLING_PORTAL_UNAVAILABLE", "No billing customer is linked yet. Use the receipt email from Creem, or subscribe first.")
-		return
-	}
-	link, err := s.creem.Portal(r.Context(), sub.CustomerID)
-	if err != nil {
-		writeErr(w, reqID(r), http.StatusBadGateway, "BILLING_PORTAL_UNAVAILABLE", "The billing portal could not be opened. Use the management link in your Creem receipt email.")
-		return
-	}
-	writeOK(w, reqID(r), map[string]string{"portal_url": link})
-}
-
 func (s *Server) devUpgrade(w http.ResponseWriter, r *http.Request) {
 	if s.cfg.AppEnv == "production" {
 		writeErr(w, reqID(r), http.StatusNotFound, "NOT_FOUND", "Not found.")
@@ -532,21 +494,21 @@ func (s *Server) devUpgrade(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, reqID(r), http.StatusUnauthorized, "UNAUTHORIZED", "Sign in first.")
 		return
 	}
-	if err := s.store.SetPlan(r.Context(), user.ID, "pro", "dev", "", "", "active"); err != nil {
+	if err := s.store.SetPlan(r.Context(), user.ID, "pro", "dev", "", "", "active", nil); err != nil {
 		writeErr(w, reqID(r), http.StatusInternalServerError, "BILLING_FAILED", "The development upgrade failed.")
 		return
 	}
 	writeOK(w, reqID(r), map[string]string{"plan": "pro"})
 }
 
-func (s *Server) creemWebhook(w http.ResponseWriter, r *http.Request) {
+func (s *Server) waffoWebhook(w http.ResponseWriter, r *http.Request) {
+	if !s.internalWebhookOK(r) {
+		writeErr(w, reqID(r), http.StatusUnauthorized, "INVALID_WEBHOOK", "Webhook signature is invalid.")
+		return
+	}
 	body, err := io.ReadAll(io.LimitReader(r.Body, 1<<20))
 	if err != nil {
 		writeErr(w, reqID(r), http.StatusBadRequest, "INVALID_WEBHOOK", "Webhook body could not be read.")
-		return
-	}
-	if !billing.VerifySignature(s.cfg.CreemWebhookSecret, body, r.Header.Get("creem-signature")) {
-		writeErr(w, reqID(r), http.StatusUnauthorized, "INVALID_WEBHOOK", "Webhook signature is invalid.")
 		return
 	}
 	ev, err := billing.ParseEvent(body)
@@ -565,8 +527,29 @@ func (s *Server) creemWebhook(w http.ResponseWriter, r *http.Request) {
 	writeOK(w, reqID(r), map[string]bool{"received": true})
 }
 
+func (s *Server) internalWebhookOK(r *http.Request) bool {
+	secret := s.cfg.BillingWebhookSecret
+	if secret != "" {
+		got := r.Header.Get("X-Sitepulse-Webhook")
+		return subtle.ConstantTimeCompare([]byte(got), []byte(secret)) == 1
+	}
+	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		host = r.RemoteAddr
+	}
+	return host == "127.0.0.1" || host == "::1"
+}
+
 func (s *Server) applyBilling(ctx context.Context, ev billing.Event) error {
 	userID := ev.UserID
+	if userID != "" && !billing.IsUUID(userID) {
+		userID = ""
+	}
+	if userID != "" {
+		if _, err := s.store.UserByID(ctx, userID); err != nil {
+			userID = ""
+		}
+	}
 	if userID == "" && ev.Email != "" {
 		id, err := s.store.UserIDByEmail(ctx, strings.ToLower(ev.Email))
 		if err == nil {
@@ -576,14 +559,24 @@ func (s *Server) applyBilling(ctx context.Context, ev billing.Event) error {
 	if userID == "" {
 		return nil
 	}
-	plan, status := "free", "canceled"
-	if ev.Grant {
-		plan, status = "pro", "active"
-	}
-	if !ev.Grant && !ev.Revoke {
+	plan, status := "free", ev.Status
+	switch {
+	case ev.Grant:
+		plan = "pro"
+		if status == "" {
+			status = "active"
+		}
+	case ev.Revoke:
+		plan = "free"
+		if status == "" {
+			status = "canceled"
+		}
+	case ev.Status == "canceling":
+		plan, status = "pro", "canceling"
+	default:
 		return nil
 	}
-	return s.store.SetPlan(ctx, userID, plan, "creem", ev.SubID, ev.CustomerID, status)
+	return s.store.SetPlan(ctx, userID, plan, "waffo", ev.SubID, ev.CustomerID, status, ev.PeriodEnd)
 }
 
 func (s *Server) contact(w http.ResponseWriter, r *http.Request) {

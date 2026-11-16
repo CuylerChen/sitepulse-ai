@@ -52,7 +52,7 @@ func AIReadiness(in AIInput) []models.Check {
 func crawlerRule(in AIInput, bot botSpec) models.Check {
 	c := models.Check{
 		Category: "ai", CheckKey: bot.Key, MaxScore: bot.MaxScore,
-		Evidence: map[string]any{"user_agent": bot.Name, "robots_fetch": in.RobotsState},
+		Evidence:       map[string]any{"user_agent": bot.Name, "robots_fetch": in.RobotsState},
 		Recommendation: "Add an explicit Allow rule for " + bot.Name + " only if you want that crawler to fetch public pages. Allowing a crawler is not the same as being cited.",
 	}
 	if in.RobotsState == "error" {
@@ -80,7 +80,7 @@ func crawlerRule(in AIInput, bot botSpec) models.Check {
 		c.Status, c.Score, c.Severity = models.StatusFail, 0, models.SeverityHigh
 		c.Title = bot.Name + " is blocked"
 		c.Description = bot.Name + " is disallowed from the homepage. This does not say whether the bot previously crawled the site."
-		c.Recommendation = "If you want " + bot.Name + " to fetch public pages, remove the disallow rule for that exact user-agent. Do not treat GPTBot and OAI-SearchBot as the same bot."
+		c.Recommendation = "Open /robots.txt and find User-agent: " + bot.Name + ". If you want that crawler on public pages, change the homepage rule to Allow: /. Keep GPTBot and OAI-SearchBot as separate groups. Allowing a crawler is not a ranking."
 	default:
 		c.Status, c.Score, c.Severity = models.StatusPass, bot.MaxScore, models.SeverityInfo
 		c.Title = bot.Name + " is allowed by robots.txt"
@@ -104,7 +104,7 @@ func contentStructure(page *crawler.Page) models.Check {
 	}
 	c := models.Check{
 		Category: "ai", CheckKey: "ai.content_structure", MaxScore: 15, Score: score,
-		Evidence: map[string]any{"h1": len(page.H1), "h2": len(page.H2), "words": page.WordCount},
+		Evidence:       map[string]any{"h1": len(page.H1), "h2": len(page.H2), "words": page.WordCount},
 		Recommendation: "Use one H1, supporting H2s, and enough visible text for a crawler that does not run JavaScript.",
 	}
 	switch {
@@ -142,7 +142,7 @@ func brandEntity(page *crawler.Page) models.Check {
 	hasName := page.OpenGraph["og:site_name"] != "" || page.Title != ""
 	c := models.Check{
 		Category: "ai", CheckKey: "ai.brand_entity", MaxScore: 10,
-		Evidence: map[string]any{"organization_or_website_schema": hasOrg, "og_site_name": page.OpenGraph["og:site_name"] != ""},
+		Evidence:       map[string]any{"organization_or_website_schema": hasOrg, "og_site_name": page.OpenGraph["og:site_name"] != ""},
 		Recommendation: "Add Organization or WebSite JSON-LD with the business name, URL, and logo.",
 	}
 	switch {
@@ -165,7 +165,7 @@ func brandEntity(page *crawler.Page) models.Check {
 func contentAccess(page *crawler.Page, indexable bool) models.Check {
 	c := models.Check{
 		Category: "ai", CheckKey: "ai.content_accessibility", MaxScore: 10,
-		Evidence: map[string]any{"words": page.WordCount, "indexable": indexable},
+		Evidence:       map[string]any{"words": page.WordCount, "indexable": indexable},
 		Recommendation: "Put the main offer in HTML, not only in a script that runs after load.",
 	}
 	if !indexable {

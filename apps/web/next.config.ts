@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   outputFileTracingRoot: path.join(__dirname),
+  serverExternalPackages: ["@waffo/pancake-ts"],
 };
 
 export default nextConfig;

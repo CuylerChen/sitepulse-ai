@@ -1,4 +1,4 @@
-import type { Check, Evidence, Severity } from "@/lib/types";
+import type { Check, Evidence, Focus, Severity } from "@/lib/types";
 
 const KNOWN_LABELS: Record<string, string> = {
   status_code: "HTTP status",
@@ -190,6 +190,54 @@ export function severityLabel(severity: string): string {
       return "Info";
     default:
       return humanize(severity);
+  }
+}
+
+export function normalizeFocus(value?: string | null): Focus {
+  switch (value) {
+    case "seo":
+    case "ai":
+    case "shopify":
+    case "grader":
+    case "full":
+      return value;
+    default:
+      return "full";
+  }
+}
+
+export function focusCategory(focus?: string | null): string | null {
+  switch (normalizeFocus(focus)) {
+    case "seo":
+      return "seo";
+    case "ai":
+      return "ai";
+    case "shopify":
+      return "shopify";
+    default:
+      return null;
+  }
+}
+
+export function categoryOrderForFocus(focus?: string | null): string[] {
+  const order = ["seo", "performance", "ai", "content", "shopify"];
+  const first = focusCategory(focus);
+  if (!first) return order;
+  return [first, ...order.filter((key) => key !== first)];
+}
+
+export function focusBanner(focus?: string | null): string | null {
+  switch (normalizeFocus(focus)) {
+    case "seo":
+      return "Started as an SEO check. The full homepage scan still ran.";
+    case "ai":
+      return "Started as an AI readiness check. The full homepage scan still ran.";
+    case "shopify":
+      return "Started as a Shopify SEO check. The full homepage scan still ran.";
+    case "grader":
+      return "Started as a website grade. The checks that produced the score are below.";
+    default:
+      return null;
   }
 }
 

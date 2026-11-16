@@ -10,6 +10,7 @@ const paths = [
   "/ai-crawler-checker",
   "/shopify-seo-checker",
   "/website-grader",
+  "/sample-report",
   "/pricing",
   "/contact",
   "/blog",

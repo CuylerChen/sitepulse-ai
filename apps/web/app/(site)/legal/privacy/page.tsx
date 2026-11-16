@@ -32,7 +32,7 @@ export default function PrivacyPage() {
       </p>
       <h2 className="mt-8 text-xl font-semibold text-ink">Sharing</h2>
       <p>
-        Payment processing, if you upgrade, is handled by the billing provider configured for the service. We share only what that checkout needs. A published report is visible to anyone with the URL until you unshare it. We may disclose information if the law requires it.
+        Payment processing, if you upgrade, is handled by Waffo Pancake. We share only the account email and a stable customer id that checkout needs. A published report is visible to anyone with the URL until you unshare it. We may disclose information if the law requires it.
       </p>
       <h2 className="mt-8 text-xl font-semibold text-ink">Retention and your requests</h2>
       <p>

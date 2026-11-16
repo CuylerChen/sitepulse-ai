@@ -41,24 +41,24 @@ type Scores struct {
 }
 
 type PSIResult struct {
-	PerformanceScore   *int    `json:"performance_score"`
-	AccessibilityScore *int    `json:"accessibility_score"`
-	BestPracticesScore *int    `json:"best_practices_score"`
-	SEOScore           *int    `json:"seo_score"`
-	LCPMs              *int    `json:"lcp_ms"`
+	PerformanceScore   *int     `json:"performance_score"`
+	AccessibilityScore *int     `json:"accessibility_score"`
+	BestPracticesScore *int     `json:"best_practices_score"`
+	SEOScore           *int     `json:"seo_score"`
+	LCPMs              *int     `json:"lcp_ms"`
 	CLS                *float64 `json:"cls"`
-	INPMs              *int    `json:"inp_ms"`
-	FCPMs              *int    `json:"fcp_ms"`
-	TTFBMs             *int    `json:"ttfb_ms"`
-	FieldData          string  `json:"field_data"`
+	INPMs              *int     `json:"inp_ms"`
+	FCPMs              *int     `json:"fcp_ms"`
+	TTFBMs             *int     `json:"ttfb_ms"`
+	FieldData          string   `json:"field_data"`
 }
 
 type PerformanceReport struct {
-	Available bool       `json:"available"`
-	Reason    string     `json:"reason,omitempty"`
-	Mobile    *PSIResult `json:"mobile"`
-	Desktop   *PSIResult `json:"desktop"`
-	OriginTTFBMs *int    `json:"origin_ttfb_ms,omitempty"`
+	Available    bool       `json:"available"`
+	Reason       string     `json:"reason,omitempty"`
+	Mobile       *PSIResult `json:"mobile"`
+	Desktop      *PSIResult `json:"desktop"`
+	OriginTTFBMs *int       `json:"origin_ttfb_ms,omitempty"`
 }
 
 type Issue struct {
@@ -78,15 +78,15 @@ type QuickWin struct {
 }
 
 type AIReport struct {
-	Version  string `json:"version"`
-	Summary  struct {
+	Version string `json:"version"`
+	Summary struct {
 		Headline    string `json:"headline"`
 		Description string `json:"description"`
 		TopPriority string `json:"top_priority"`
 	} `json:"summary"`
-	Issues      []Issue   `json:"issues"`
+	Issues      []Issue    `json:"issues"`
 	QuickWins   []QuickWin `json:"quick_wins"`
-	Disclaimers []string  `json:"disclaimers"`
+	Disclaimers []string   `json:"disclaimers"`
 }
 
 type AIMeta struct {
@@ -104,20 +104,21 @@ type ShareInfo struct {
 }
 
 type AuditView struct {
-	ID            string    `json:"id"`
-	RequestedURL  string    `json:"requested_url"`
-	FinalURL      string    `json:"final_url,omitempty"`
-	Domain        string    `json:"domain,omitempty"`
-	Status        string    `json:"status"`
-	Progress      string    `json:"progress"`
-	OverallScore  *int      `json:"overall_score"`
-	Grade         string    `json:"grade,omitempty"`
-	GradeLabel    string    `json:"grade_label,omitempty"`
-	Scores        *Scores   `json:"scores,omitempty"`
-	Platform      string    `json:"platform,omitempty"`
-	ScannedAt     *time.Time `json:"scanned_at,omitempty"`
-	ErrorMessage  string    `json:"error_message,omitempty"`
-	CreatedAt     time.Time `json:"created_at,omitempty"`
+	ID           string     `json:"id"`
+	RequestedURL string     `json:"requested_url"`
+	FinalURL     string     `json:"final_url,omitempty"`
+	Domain       string     `json:"domain,omitempty"`
+	Status       string     `json:"status"`
+	Progress     string     `json:"progress"`
+	OverallScore *int       `json:"overall_score"`
+	Grade        string     `json:"grade,omitempty"`
+	GradeLabel   string     `json:"grade_label,omitempty"`
+	Scores       *Scores    `json:"scores,omitempty"`
+	Platform     string     `json:"platform,omitempty"`
+	Focus        string     `json:"focus,omitempty"`
+	ScannedAt    *time.Time `json:"scanned_at,omitempty"`
+	ErrorMessage string     `json:"error_message,omitempty"`
+	CreatedAt    time.Time  `json:"created_at,omitempty"`
 }
 
 type Report struct {

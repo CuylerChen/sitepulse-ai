@@ -17,7 +17,7 @@ Optional keys in `.env`:
 
 - `PAGESPEED_API_KEY` for lab performance. Without it, performance is "Not available".
 - `LLM_API_KEY` for model-written fixes. Without it, the rule report is used.
-- `CREEM_API_KEY` and `CREEM_PRO_PRODUCT_ID` for Pro checkout. In development, billing has a local upgrade button.
+- `WAFFO_PRIVATE_KEY` and `WAFFO_PRO_PRODUCT_ID` for Pro checkout via Waffo Pancake. Put those values in `apps/web/.env.local`. In development, billing has a local upgrade button.
 
 ## Tests
 

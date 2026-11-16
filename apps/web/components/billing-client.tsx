@@ -40,8 +40,10 @@ export function BillingClient() {
       setUser(me);
       setSubscription(sub);
       if (planData?.plans?.length) setPlans(planData.plans);
+      return { me, sub };
     } catch (err) {
       setError(asApiError(err));
+      return { me: null, sub: null };
     } finally {
       setLoading(false);
     }
@@ -49,6 +51,45 @@ export function BillingClient() {
 
   useEffect(() => {
     void load();
+  }, []);
+
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("checkout") !== "success") return;
+    setNotice("Confirming your Pro subscription…");
+    let n = 0;
+    let timer = 0;
+    let cancelled = false;
+
+    async function tick() {
+      n += 1;
+      try {
+        const [me, sub] = await Promise.all([
+          api<User>("/users/me"),
+          api<Subscription>("/billing/subscription").catch(() => null),
+        ]);
+        if (cancelled) return;
+        setUser(me);
+        if (sub) setSubscription(sub);
+        if (me.plan === "pro" || me.plan === "agency") {
+          setNotice("Pro is active.");
+          return;
+        }
+      } catch {
+        /* keep polling */
+      }
+      if (cancelled) return;
+      if (n >= 15) {
+        setNotice("Payment received. If Pro is not active yet, refresh this page in a minute.");
+        return;
+      }
+      timer = window.setTimeout(() => void tick(), 2000);
+    }
+
+    void tick();
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
   }, []);
 
   async function checkout(planId: string) {
@@ -100,12 +141,14 @@ export function BillingClient() {
 
   if (loading) return <Spinner label="Loading billing…" />;
 
+  const currentPlan = subscription?.plan || user?.plan || "free";
+
   return (
     <div className="space-y-4">
       <div>
         <h1 className="text-2xl font-semibold">Billing</h1>
         <p className="mt-1 text-sm text-muted">
-          Current plan: {planLabel(subscription?.plan || user?.plan || "free")}
+          Current plan: {planLabel(currentPlan)}
           {subscription?.status ? ` · ${subscription.status}` : ""}
           {subscription?.current_period_end ? ` · Renews or ends ${formatDay(subscription.current_period_end)}` : ""}
         </p>
@@ -135,8 +178,10 @@ export function BillingClient() {
                   <Button variant="secondary" disabled>
                     Coming soon
                   </Button>
+                ) : currentPlan === plan.id ? (
+                  <p className="text-sm text-success">This is your current plan.</p>
                 ) : (
-                  <Button onClick={() => void checkout(plan.id)} disabled={pending === plan.id}>
+                  <Button onClick={() => void checkout(plan.id)} disabled={pending === plan.id || currentPlan === "pro"}>
                     {pending === plan.id ? "Opening checkout…" : `Upgrade to ${plan.name}`}
                   </Button>
                 )}

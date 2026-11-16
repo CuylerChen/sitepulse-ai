@@ -110,6 +110,7 @@ export type AuditView = {
   grade_label?: string;
   scores?: Scores | null;
   platform?: "custom" | "shopify" | string;
+  focus?: Focus;
   scanned_at?: string | null;
   error_message?: string;
   created_at?: string;

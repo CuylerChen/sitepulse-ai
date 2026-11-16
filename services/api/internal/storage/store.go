@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -155,6 +156,15 @@ func LimitForPlan(plan string) int {
 	}
 }
 
+func NormalizeFocus(focus string) string {
+	switch strings.ToLower(strings.TrimSpace(focus)) {
+	case "seo", "ai", "shopify", "grader", "full":
+		return strings.ToLower(strings.TrimSpace(focus))
+	default:
+		return "full"
+	}
+}
+
 func (s *Store) CreateAudit(ctx context.Context, owner Owner, requestedURL, domain, focus string) (string, error) {
 	tx, err := s.Pool.Begin(ctx)
 	if err != nil {
@@ -210,7 +220,7 @@ func (s *Store) CreateAudit(ctx context.Context, owner Owner, requestedURL, doma
 		return "", err
 	}
 	var auditID string
-	cfg, _ := json.Marshal(map[string]string{"focus": focus})
+	cfg, _ := json.Marshal(map[string]string{"focus": NormalizeFocus(focus)})
 	err = tx.QueryRow(ctx, `
 		INSERT INTO audits (website_id, user_id, anon_key, requested_url, domain, status, progress, scan_config)
 		VALUES ($1::uuid, $2::uuid, NULLIF($3, ''), $4, $5, 'pending', 'queued', $6::jsonb)
@@ -301,10 +311,7 @@ func (s *Store) AuditRequest(ctx context.Context, id string) (url, focus string,
 		Focus string `json:"focus"`
 	}
 	_ = json.Unmarshal(cfg, &parsed)
-	if parsed.Focus == "" {
-		parsed.Focus = "full"
-	}
-	return url, parsed.Focus, err
+	return url, NormalizeFocus(parsed.Focus), err
 }
 
 func (s *Store) SetProgress(ctx context.Context, auditID, progress string) error {
@@ -435,13 +442,15 @@ func (s *Store) loadAudit(ctx context.Context, auditID string) (auditRow, error)
 	var row auditRow
 	var overall, seo, perf, ai, content *int
 	var scanned *time.Time
+	var cfg []byte
 	err := s.Pool.QueryRow(ctx, `
 		SELECT id::text, requested_url, COALESCE(final_url, ''), COALESCE(domain, ''), status, progress,
 		       overall_score, seo_score, performance_score, ai_readiness_score, content_score,
 		       COALESCE(grade, ''), COALESCE(grade_label, ''), COALESCE(platform, ''), COALESCE(error_message, ''),
-		       completed_at, created_at, user_id::text, anon_key, COALESCE(performance, 'null'::jsonb)
+		       completed_at, created_at, user_id::text, anon_key, COALESCE(performance, 'null'::jsonb),
+		       COALESCE(scan_config, '{}'::jsonb)
 		FROM audits WHERE id = $1::uuid
-	`, auditID).Scan(&row.ID, &row.RequestedURL, &row.FinalURL, &row.Domain, &row.Status, &row.Progress, &overall, &seo, &perf, &ai, &content, &row.Grade, &row.GradeLabel, &row.Platform, &row.ErrorMessage, &scanned, &row.CreatedAt, &row.UserID, &row.AnonKey, &row.PerfJSON)
+	`, auditID).Scan(&row.ID, &row.RequestedURL, &row.FinalURL, &row.Domain, &row.Status, &row.Progress, &overall, &seo, &perf, &ai, &content, &row.Grade, &row.GradeLabel, &row.Platform, &row.ErrorMessage, &scanned, &row.CreatedAt, &row.UserID, &row.AnonKey, &row.PerfJSON, &cfg)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return auditRow{}, ErrNotFound
 	}
@@ -452,6 +461,11 @@ func (s *Store) loadAudit(ctx context.Context, auditID string) (auditRow, error)
 	row.ScannedAt = scanned
 	row.Scores = models.Scores{SEO: seo, Performance: perf, AIReadiness: ai, Content: content, Overall: overall, Grade: row.Grade, GradeLabel: row.GradeLabel}
 	row.AuditView.Scores = &row.Scores
+	var parsed struct {
+		Focus string `json:"focus"`
+	}
+	_ = json.Unmarshal(cfg, &parsed)
+	row.Focus = NormalizeFocus(parsed.Focus)
 	return row, nil
 }
 
@@ -575,14 +589,14 @@ func (s *Store) PublicReport(ctx context.Context, token string) (models.Report, 
 }
 
 type AuditSummary struct {
-	ID           string     `json:"id"`
-	Domain       string     `json:"domain"`
-	RequestedURL string     `json:"requested_url"`
-	Status       string     `json:"status"`
-	OverallScore *int       `json:"overall_score"`
-	Grade        string     `json:"grade"`
-	CreatedAt    time.Time  `json:"created_at"`
-	Platform     string     `json:"platform"`
+	ID           string    `json:"id"`
+	Domain       string    `json:"domain"`
+	RequestedURL string    `json:"requested_url"`
+	Status       string    `json:"status"`
+	OverallScore *int      `json:"overall_score"`
+	Grade        string    `json:"grade"`
+	CreatedAt    time.Time `json:"created_at"`
+	Platform     string    `json:"platform"`
 }
 
 func (s *Store) ListAudits(ctx context.Context, owner Owner) ([]AuditSummary, error) {
@@ -627,12 +641,12 @@ func (s *Store) DeleteAudit(ctx context.Context, id string, owner Owner) error {
 }
 
 type Website struct {
-	ID           string    `json:"id"`
-	Domain       string    `json:"domain"`
-	URL          string    `json:"url"`
-	Platform     string    `json:"platform"`
-	LatestScore  *int      `json:"latest_score"`
-	CreatedAt    time.Time `json:"created_at"`
+	ID          string    `json:"id"`
+	Domain      string    `json:"domain"`
+	URL         string    `json:"url"`
+	Platform    string    `json:"platform"`
+	LatestScore *int      `json:"latest_score"`
+	CreatedAt   time.Time `json:"created_at"`
 }
 
 func (s *Store) ListWebsites(ctx context.Context, userID string) ([]Website, error) {
@@ -667,7 +681,7 @@ func (s *Store) DeleteWebsite(ctx context.Context, id, userID string) error {
 	return nil
 }
 
-func (s *Store) SetPlan(ctx context.Context, userID, plan, provider, subID, customerID, status string) error {
+func (s *Store) SetPlan(ctx context.Context, userID, plan, provider, subID, customerID, status string, periodEnd *time.Time) error {
 	tx, err := s.Pool.Begin(ctx)
 	if err != nil {
 		return err
@@ -677,9 +691,9 @@ func (s *Store) SetPlan(ctx context.Context, userID, plan, provider, subID, cust
 		return err
 	}
 	_, err = tx.Exec(ctx, `
-		INSERT INTO subscriptions (user_id, provider, provider_subscription_id, provider_customer_id, plan, status)
-		VALUES ($1::uuid, $2, NULLIF($3, ''), NULLIF($4, ''), $5, $6)
-	`, userID, provider, subID, customerID, plan, status)
+		INSERT INTO subscriptions (user_id, provider, provider_subscription_id, provider_customer_id, plan, status, current_period_end)
+		VALUES ($1::uuid, $2, NULLIF($3, ''), NULLIF($4, ''), $5, $6, $7)
+	`, userID, provider, subID, customerID, plan, status, periodEnd)
 	if err != nil {
 		return err
 	}

@@ -14,6 +14,7 @@ export const sampleReport: Report = {
     grade_label: "Good, but needs work",
     scores: { seo: 88, performance: 72, ai_readiness: 65, content: 74 },
     platform: "custom",
+    focus: "full",
     scanned_at: null,
     error_message: "",
   },

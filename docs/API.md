@@ -36,10 +36,10 @@ Cookie session: `sp_session`. Anonymous quota cookie: `sp_anon`.
 | GET | /websites | Signed-in sites |
 | DELETE | /websites/{id} | Delete a site |
 | GET | /billing/plans | Free, Pro, Agency |
-| POST | /billing/checkout | Creem checkout URL |
-| POST | /billing/portal | Creem customer portal |
+| POST | /billing/checkout | Waffo Pancake checkout URL (Next.js, `@waffo/pancake-ts`) |
+| POST | /billing/portal | Waffo customer portal link (Next.js) |
 | GET | /billing/subscription | Latest subscription |
-| POST | /webhooks/creem | Signed billing events |
+| POST | /webhooks/waffo | Internal apply path after Next.js verifies the Waffo signature |
 | POST | /billing/dev-upgrade | Development only |
 
-Webhook deliveries must hit the Go process directly so the raw body can be verified with `creem-signature`.
+Public webhook deliveries must hit Next.js at `/api/webhooks/waffo` so `@waffo/pancake-ts` can verify `x-waffo-signature` on the raw body.

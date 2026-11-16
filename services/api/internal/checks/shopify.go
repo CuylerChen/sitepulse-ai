@@ -35,7 +35,7 @@ func Shopify(page *crawler.Page, final *url.URL) []models.Check {
 	out = append(out, models.Check{
 		Category: "shopify", CheckKey: "shopify.product_schema", Status: status, Severity: severity,
 		Title: title, Description: desc, Evidence: map[string]any{"types": page.SchemaTypes},
-		Recommendation: "Add Product JSON-LD with name, image, description, and offers.",
+		Recommendation: "Add Product JSON-LD on this template with name, image, description, and an Offer (price, currency, availability). Those values must match what the shopper sees.",
 	})
 	titleStatus := models.StatusWarning
 	if len(page.Title) >= 20 && len(page.Title) <= 70 {

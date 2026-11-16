@@ -12,42 +12,48 @@ export const metadata: Metadata = {
 
 const modules = [
   {
-    title: "SEO Foundation Audit",
-    body: "On-page, technical & content quality analysis",
+    title: "SEO foundation",
+    body: "Titles, indexability, canonical, and on-page basics on the page you submit.",
     href: "/seo-checker",
     icon: "shield",
   },
   {
-    title: "AI Visibility Engine",
-    body: "Optimized for ChatGPT, Gemini & AI Overviews",
+    title: "AI crawler readiness",
+    body: "Whether GPTBot, Claude, and Perplexity can fetch the homepage. This is access, not a ranking.",
     href: "/ai-visibility-checker",
     icon: "nodes",
   },
   {
-    title: "Backlink Intelligence",
-    body: "Authority profile & link quality analysis",
+    title: "Performance",
+    body: "Lab scores when PageSpeed returns them. If it does not, the report says not available.",
     href: "/website-audit",
-    icon: "link",
-  },
-  {
-    title: "Competitor Intelligence",
-    body: "Gap analysis & competitive benchmarking",
-    href: "/website-grader",
-    icon: "user",
-  },
-  {
-    title: "Ranking Predictor",
-    body: "Data-driven ranking potential estimation",
-    href: "/website-grader",
     icon: "chart",
   },
   {
-    title: "Smart Action Plan",
-    body: "Prioritized, actionable improvement steps",
+    title: "Content clarity",
+    body: "Headings, visible text, and whether the HTML says what you sell.",
+    href: "/website-audit",
+    icon: "user",
+  },
+  {
+    title: "Shopify checks",
+    body: "Storefront detection and product-page schema, without an app install.",
+    href: "/shopify-seo-checker",
+    icon: "link",
+  },
+  {
+    title: "Prioritized fixes",
+    body: "Critical issues first, with steps you can hand to whoever edits the theme.",
     href: "/website-audit",
     icon: "bolt",
   },
 ] as const;
+
+const steps = [
+  { title: "Paste a public URL", body: "A homepage or product page works. We fetch that address, not your whole site." },
+  { title: "We read the page", body: "The HTML, robots.txt, and a same-host sitemap. JavaScript is not executed." },
+  { title: "You get a report", body: "Scores, pass/fail checks, and a fix list. Share it or run another URL." },
+];
 
 const faqs = [
   {
@@ -85,22 +91,40 @@ export default function HomePage() {
           </div>
           <ul className="mt-6 flex flex-col items-center gap-3 text-sm text-muted sm:flex-row sm:gap-6">
             <li className="inline-flex items-center gap-2">
-              <SparkIcon /> AI-powered analysis
+              <SparkIcon /> Homepage SEO and AI crawler checks
             </li>
             <li className="inline-flex items-center gap-2">
               <GlobeMini /> 1 free analysis — no signup needed
             </li>
             <li className="inline-flex items-center gap-2">
-              <ClockIcon /> Actionable insights in minutes
+              <ClockIcon /> Most scans finish in under a minute
             </li>
           </ul>
+          <p className="mt-4 text-sm">
+            <Link href="/sample-report" className="font-semibold text-primary">
+              See a sample report
+            </Link>
+          </p>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 pb-20">
+        <h2 className="text-center text-3xl font-semibold tracking-tight text-ink sm:text-4xl">How a scan works</h2>
+        <div className="mt-10 grid gap-4 md:grid-cols-3">
+          {steps.map((step, index) => (
+            <Card key={step.title}>
+              <p className="text-sm font-semibold text-primary">Step {index + 1}</p>
+              <h3 className="mt-2 text-lg font-semibold text-ink">{step.title}</h3>
+              <p className="mt-2 text-sm leading-6 text-muted">{step.body}</p>
+            </Card>
+          ))}
         </div>
       </section>
 
       <section className="mx-auto max-w-6xl px-4 pb-24">
         <div className="text-center">
-          <h2 className="text-3xl font-semibold tracking-tight text-ink sm:text-4xl">6 Modules. One Complete Audit.</h2>
-          <p className="mt-3 text-muted">Every angle of your search visibility analyzed and scored.</p>
+          <h2 className="text-3xl font-semibold tracking-tight text-ink sm:text-4xl">What the audit covers</h2>
+          <p className="mt-3 text-muted">One homepage scan. Scores and checks you can explain.</p>
         </div>
         <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {modules.map((item) => (

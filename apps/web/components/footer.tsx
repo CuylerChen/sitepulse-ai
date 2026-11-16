@@ -9,6 +9,7 @@ const product = [
   { href: "/ai-crawler-checker", label: "AI crawler checker" },
   { href: "/shopify-seo-checker", label: "Shopify SEO" },
   { href: "/website-grader", label: "Website grader" },
+  { href: "/sample-report", label: "Sample report" },
   { href: "/pricing", label: "Pricing" },
 ];
 

@@ -10,8 +10,11 @@ import { ErrorNote } from "@/components/error-note";
 import { ApiError, api, asApiError } from "@/lib/api";
 import {
   categoryLabel,
+  categoryOrderForFocus,
   evidenceLines,
   fieldDataLabel,
+  focusBanner,
+  focusCategory,
   formatCls,
   formatDate,
   formatMs,
@@ -27,13 +30,11 @@ import {
 import { REPORT_DISCLAIMER, SITE_URL } from "@/lib/site";
 import type { AiIssue, Check, PerformanceReport, PsiResult, Report, ShareInfo, Usage } from "@/lib/types";
 
-const CATEGORY_ORDER = ["seo", "performance", "ai", "content", "shopify"];
-
 const SCORE_CARDS = [
-  { key: "seo" as const, label: "SEO", note: "Titles, indexability, and on-page signals from this page." },
-  { key: "performance" as const, label: "Performance", note: "Shown only when the scan returns a performance score." },
-  { key: "ai_readiness" as const, label: "AI Readiness", note: "Whether crawlers can access and understand the page." },
-  { key: "content" as const, label: "Content", note: "Headings, description, and whether the page states what you sell." },
+  { key: "seo" as const, category: "seo", label: "SEO", note: "Titles, indexability, and on-page signals from this page." },
+  { key: "performance" as const, category: "performance", label: "Performance", note: "Shown only when the scan returns a performance score." },
+  { key: "ai_readiness" as const, category: "ai", label: "AI Readiness", note: "Whether crawlers can access and understand the page." },
+  { key: "content" as const, category: "content", label: "Content", note: "Headings, description, and whether the page states what you sell." },
 ];
 
 function badgeClass(kind: string): string {
@@ -109,7 +110,7 @@ function CopyButton({ text }: { text: string }) {
   );
 }
 
-function IssueCard({ issue }: { issue: AiIssue }) {
+function IssueCard({ issue, found }: { issue: AiIssue; found?: string[] }) {
   return (
     <Card>
       <div className="flex flex-wrap items-center gap-2">
@@ -118,8 +119,24 @@ function IssueCard({ issue }: { issue: AiIssue }) {
         </span>
       </div>
       <h3 className="mt-3 text-base font-semibold text-ink">{issue.problem}</h3>
-      {issue.impact ? <p className="mt-2 text-sm leading-6 text-muted">Impact: {issue.impact}</p> : null}
-      {issue.recommended_fix ? <p className="mt-2 text-sm leading-6 text-ink">{issue.recommended_fix}</p> : null}
+      {issue.impact ? (
+        <p className="mt-2 text-sm leading-6 text-muted">
+          <span className="font-semibold text-ink">Why it matters. </span>
+          {issue.impact}
+        </p>
+      ) : null}
+      {found?.length ? (
+        <p className="mt-2 text-sm leading-6 text-muted">
+          <span className="font-semibold text-ink">What we found. </span>
+          {found.join(" · ")}
+        </p>
+      ) : null}
+      {issue.recommended_fix ? (
+        <p className="mt-2 text-sm leading-6 text-ink">
+          <span className="font-semibold">Do this. </span>
+          {issue.recommended_fix}
+        </p>
+      ) : null}
       {issue.implementation_steps?.length ? (
         <ol className="mt-3 list-decimal space-y-1 pl-5 text-sm leading-6 text-ink">
           {issue.implementation_steps.map((step) => (
@@ -157,7 +174,12 @@ function CheckCard({ check }: { check: Check }) {
       </div>
       <h4 className="mt-2 text-sm font-semibold text-ink">{check.title}</h4>
       {check.description ? <p className="mt-1 text-sm leading-6 text-muted">{check.description}</p> : null}
-      {check.recommendation ? <p className="mt-2 text-sm leading-6 text-ink">{check.recommendation}</p> : null}
+      {check.status !== "pass" && check.recommendation ? (
+        <p className="mt-2 text-sm leading-6 text-ink">
+          <span className="font-semibold">Do this. </span>
+          {check.recommendation}
+        </p>
+      ) : null}
       <EvidenceBlock evidence={check.evidence} />
     </article>
   );
@@ -383,13 +405,38 @@ export function ReportView({
   const [deleting, setDeleting] = useState(false);
   const audit = report.audit;
   const checks = report.checks ?? [];
-  const issues = [...(report.ai_report?.issues ?? [])].sort((a, b) => severityRank(a.severity) - severityRank(b.severity));
-  const priorityIssues = issues.filter((issue) => isPrioritySeverity(issue.severity));
-  const otherIssues = issues.filter((issue) => !isPrioritySeverity(issue.severity));
-  const covered = new Set(priorityIssues.map((issue) => issue.check_key));
-  const priorityChecks = sortChecks(checks.filter((check) => isPrioritySeverity(check.severity) && !covered.has(check.check_key) && check.status !== "pass"));
+  const focus = audit.focus;
+  const focused = focusCategory(focus);
+  const banner = focusBanner(focus);
+  const [activeCategory, setActiveCategory] = useState(focused || "all");
+  const checkByKey = useMemo(() => {
+    const map = new Map<string, Check>();
+    for (const check of checks) map.set(check.check_key, check);
+    return map;
+  }, [checks]);
+  const issues = [...(report.ai_report?.issues ?? [])].sort((a, b) => {
+    const bySeverity = severityRank(a.severity) - severityRank(b.severity);
+    if (bySeverity !== 0) return bySeverity;
+    if (!focused) return 0;
+    const aMatch = checkByKey.get(a.check_key)?.category === focused ? 0 : 1;
+    const bMatch = checkByKey.get(b.check_key)?.category === focused ? 0 : 1;
+    return aMatch - bMatch;
+  });
+  const issueKeys = new Set(issues.map((issue) => issue.check_key));
+  const leftoverProblems = sortChecks(
+    checks.filter(
+      (check) =>
+        !issueKeys.has(check.check_key) &&
+        check.status !== "pass" &&
+        isPrioritySeverity(check.severity),
+    ),
+  );
   const disclaimer = report.disclaimer || REPORT_DISCLAIMER;
   const extraDisclaimers = (report.ai_report?.disclaimers ?? []).filter((item) => item && item !== disclaimer);
+  const scoreCards = [...SCORE_CARDS].sort((a, b) => {
+    const order = categoryOrderForFocus(focus);
+    return (order.indexOf(a.category) === -1 ? 99 : order.indexOf(a.category)) - (order.indexOf(b.category) === -1 ? 99 : order.indexOf(b.category));
+  });
 
   const groups = useMemo(() => {
     const map = new Map<string, Check[]>();
@@ -397,13 +444,15 @@ export function ReportView({
       const key = check.category || "other";
       map.set(key, [...(map.get(key) ?? []), check]);
     }
+    const order = categoryOrderForFocus(focus);
     const keys = [...map.keys()].sort((a, b) => {
-      const ai = CATEGORY_ORDER.indexOf(a);
-      const bi = CATEGORY_ORDER.indexOf(b);
+      const ai = order.indexOf(a);
+      const bi = order.indexOf(b);
       return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
     });
     return keys.map((key) => ({ key, checks: sortChecks(map.get(key) ?? []) }));
-  }, [checks]);
+  }, [checks, focus]);
+  const visibleGroups = activeCategory === "all" ? groups : groups.filter((group) => group.key === activeCategory);
 
   const scores = audit.scores;
   const fallbackUrl = audit.id ? `${siteUrl}/audits/${audit.id}` : siteUrl;
@@ -426,6 +475,9 @@ export function ReportView({
         <div className="rounded-xl border border-warning/30 bg-warning/10 px-4 py-3 text-sm font-semibold text-warning">
           Sample data — not a live scan
         </div>
+      ) : null}
+      {banner ? (
+        <div className="rounded-xl border border-line bg-card px-4 py-3 text-sm leading-6 text-muted">{banner}</div>
       ) : null}
       <div className="mb-2 hidden print:block">
         <Logo />
@@ -452,7 +504,7 @@ export function ReportView({
       </section>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {SCORE_CARDS.map((card) => {
+        {scoreCards.map((card) => {
           const value = scores ? scores[card.key] : null;
           const missing = value == null;
           return (
@@ -503,7 +555,7 @@ export function ReportView({
           ) : null}
           {report.ai_report.summary.top_priority ? (
             <p className="mt-3 text-sm leading-6 text-ink">
-              <span className="font-semibold">Start here: </span>
+              <span className="font-semibold">Start here. </span>
               {report.ai_report.summary.top_priority}
             </p>
           ) : null}
@@ -511,34 +563,31 @@ export function ReportView({
       ) : null}
 
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Fix these first</h2>
-        {priorityIssues.length === 0 && priorityChecks.length === 0 ? (
+        <h2 className="text-lg font-semibold">What to fix</h2>
+        {issues.length === 0 && leftoverProblems.length === 0 ? (
           <Card>
-            <p className="text-sm text-muted">No critical or high issues were found in this scan.</p>
+            <p className="text-sm leading-6 text-muted">
+              No blocking homepage issues showed up in this scan. That is not a ranking. Recheck product or collection templates if those matter more than the homepage.
+            </p>
           </Card>
         ) : null}
-        {priorityIssues.map((issue) => (
-          <IssueCard key={`${issue.check_key}-${issue.problem}`} issue={issue} />
+        {issues.map((issue) => (
+          <IssueCard
+            key={`${issue.check_key}-${issue.problem}`}
+            issue={issue}
+            found={evidenceLines(checkByKey.get(issue.check_key)?.evidence ?? null)}
+          />
         ))}
-        {priorityChecks.map((check) => (
+        {leftoverProblems.map((check) => (
           <Card key={check.check_key}>
             <CheckCard check={check} />
           </Card>
         ))}
       </section>
 
-      {otherIssues.length ? (
-        <section className="space-y-3">
-          <h2 className="text-lg font-semibold">Other recommendations</h2>
-          {otherIssues.map((issue) => (
-            <IssueCard key={`${issue.check_key}-${issue.problem}`} issue={issue} />
-          ))}
-        </section>
-      ) : null}
-
       {report.ai_report?.quick_wins?.length ? (
         <Card>
-          <h2 className="text-lg font-semibold">Quick wins</h2>
+          <h2 className="text-lg font-semibold">Do these today</h2>
           <ul className="mt-3 space-y-3">
             {report.ai_report.quick_wins.map((win) => (
               <li key={`${win.check_key}-${win.title}`}>
@@ -563,25 +612,51 @@ export function ReportView({
 
       <PerformanceSection performance={report.performance} />
 
-      <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Check details</h2>
-        {groups.length === 0 ? (
-          <Card>
+      <details className="rounded-xl border border-line bg-card p-5">
+        <summary className="cursor-pointer text-lg font-semibold">All checks</summary>
+        <p className="mt-2 text-sm leading-6 text-muted">Every pass, warning, and fail from this fetch. The list above is the work to do.</p>
+        {groups.length > 1 ? (
+          <div className="no-print mt-4 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setActiveCategory("all")}
+              className={`inline-flex h-9 items-center rounded-sm px-3 text-sm font-medium ${
+                activeCategory === "all" ? "bg-primary text-white" : "border border-line bg-white text-ink"
+              }`}
+            >
+              All
+            </button>
+            {groups.map((group) => (
+              <button
+                key={group.key}
+                type="button"
+                onClick={() => setActiveCategory(group.key)}
+                className={`inline-flex h-9 items-center rounded-sm px-3 text-sm font-medium ${
+                  activeCategory === group.key ? "bg-primary text-white" : "border border-line bg-white text-ink"
+                }`}
+              >
+                {categoryLabel(group.key)}
+              </button>
+            ))}
+          </div>
+        ) : null}
+        <div className="mt-4 space-y-3">
+          {visibleGroups.length === 0 ? (
             <p className="text-sm text-muted">No checks were returned for this scan.</p>
-          </Card>
-        ) : (
-          groups.map((group) => (
-            <Card key={group.key}>
-              <h3 className="text-base font-semibold">{categoryLabel(group.key)}</h3>
-              <div className="mt-1">
-                {group.checks.map((check) => (
-                  <CheckCard key={`${check.check_key}-${check.title}`} check={check} />
-                ))}
+          ) : (
+            visibleGroups.map((group) => (
+              <div key={group.key} className="border-t border-line pt-3">
+                <h3 className="text-base font-semibold">{categoryLabel(group.key)}</h3>
+                <div className="mt-1">
+                  {group.checks.map((check) => (
+                    <CheckCard key={`${check.check_key}-${check.title}`} check={check} />
+                  ))}
+                </div>
               </div>
-            </Card>
-          ))
-        )}
-      </section>
+            ))
+          )}
+        </div>
+      </details>
 
       {audit.final_url && audit.final_url !== audit.requested_url ? (
         <p className="text-sm text-muted">Scanned {audit.final_url} after redirects from {audit.requested_url}.</p>

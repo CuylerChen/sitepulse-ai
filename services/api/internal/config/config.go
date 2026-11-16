@@ -8,37 +8,31 @@ import (
 )
 
 type Config struct {
-	DatabaseURL        string
-	Port               string
-	AppBaseURL         string
-	AppEnv             string
-	LLMAPIKey          string
-	LLMBaseURL         string
-	LLMModel           string
-	PageSpeedAPIKey    string
-	CreemAPIKey        string
-	CreemAPIBase       string
-	CreemWebhookSecret string
-	CreemProductID     string
-	AIMonthlyTokenCap  int
+	DatabaseURL          string
+	Port                 string
+	AppBaseURL           string
+	AppEnv               string
+	LLMAPIKey            string
+	LLMBaseURL           string
+	LLMModel             string
+	PageSpeedAPIKey      string
+	BillingWebhookSecret string
+	AIMonthlyTokenCap    int
 }
 
 func Load() Config {
 	loadEnvFiles(".env", "services/api/.env", "../.env", "../../.env")
 	cfg := Config{
-		DatabaseURL:        env("DATABASE_URL", "postgres://localhost:5432/sitepulse?sslmode=disable"),
-		Port:               env("PORT", "8080"),
-		AppBaseURL:         strings.TrimRight(env("APP_BASE_URL", "http://localhost:3000"), "/"),
-		AppEnv:             env("APP_ENV", "development"),
-		LLMAPIKey:          os.Getenv("LLM_API_KEY"),
-		LLMBaseURL:         env("LLM_BASE_URL", "https://api.openai.com/v1"),
-		LLMModel:           env("LLM_MODEL", "gpt-4o-mini"),
-		PageSpeedAPIKey:    os.Getenv("PAGESPEED_API_KEY"),
-		CreemAPIKey:        os.Getenv("CREEM_API_KEY"),
-		CreemAPIBase:       env("CREEM_API_BASE", "https://test-api.creem.io"),
-		CreemWebhookSecret: os.Getenv("CREEM_WEBHOOK_SECRET"),
-		CreemProductID:     os.Getenv("CREEM_PRO_PRODUCT_ID"),
-		AIMonthlyTokenCap:  200000,
+		DatabaseURL:          env("DATABASE_URL", "postgres://localhost:5432/sitepulse?sslmode=disable"),
+		Port:                 env("PORT", "8080"),
+		AppBaseURL:           strings.TrimRight(env("APP_BASE_URL", "http://localhost:3000"), "/"),
+		AppEnv:               env("APP_ENV", "development"),
+		LLMAPIKey:            os.Getenv("LLM_API_KEY"),
+		LLMBaseURL:           env("LLM_BASE_URL", "https://api.openai.com/v1"),
+		LLMModel:             env("LLM_MODEL", "gpt-4o-mini"),
+		PageSpeedAPIKey:      os.Getenv("PAGESPEED_API_KEY"),
+		BillingWebhookSecret: os.Getenv("BILLING_WEBHOOK_SECRET"),
+		AIMonthlyTokenCap:    200000,
 	}
 	if v := os.Getenv("AI_MONTHLY_TOKEN_CAP"); v != "" {
 		if n, err := strconv.Atoi(v); err == nil {
